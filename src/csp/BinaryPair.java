@@ -25,4 +25,9 @@ public class BinaryPair {
         result = 31 * result + y;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%s,%s)", x, y);
+    }
 }
