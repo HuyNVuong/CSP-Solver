@@ -13,10 +13,13 @@ public class MyParser {
 
     private List<Variable> variables;
 
+    private List<Constraint> constraints;
+
     private final InstanceParser parser;
 
     public MyParser(String fileName) {
         parser = new InstanceParser();
+        constraints = new ArrayList<>();
         parser.loadInstance(fileName);
     }
 
@@ -31,17 +34,18 @@ public class MyParser {
 
         var variablesLookup = variables.stream().collect(Collectors.toMap(Variable::getName, item -> item));
 
-        var constraints = new ArrayList<Constraint>();
-
         for (String key : parser.getMapOfConstraints().keySet()) {
             PConstraint con = parser.getMapOfConstraints().get(key);
             Constraint constraint = new Constraint(con);
             constraints.add(constraint);
+            constraint.setVariables(variablesLookup);
             for (PVariable variable : con.getScope()) {
                 variablesLookup.get(variable.getName()).addConstraint(con);
             }
         }
+    }
 
+    public void verbose() {
         System.out.println("Variables:");
         variables.forEach(System.out::println);
         System.out.println();
@@ -52,4 +56,6 @@ public class MyParser {
     public List<Variable> getVariable() {
         return variables;
     }
+
+    public List<Constraint> getConstraints() { return constraints; }
 }

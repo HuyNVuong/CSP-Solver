@@ -15,6 +15,6 @@ public class ArcConsistencyStaticMethodsTests {
                         new int[] {1,2},
                 }));
         var constraint = new Constraint(pConstraint);
-        var updatedDomain = ArcConsistencyStaticMethods.revise(constraint);
+//        var updatedDomain = ArcConsistencyStaticMethods.revise(constraint);
     }
 }

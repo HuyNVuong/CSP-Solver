@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 public class Variable {
 
-    private final PVariable varRef;
-
     private final Domain domain;
 
     private String name;
@@ -21,11 +19,11 @@ public class Variable {
     private Map<String, PConstraint> constraintOfNeighbors;
 
     public Variable(PVariable var) {
-        varRef = var;
         name = var.getName();
         domain = new Domain(var.getDomain());
         neighbors = new HashMap<>();
         constraints = new HashMap<>();
+        constraintOfNeighbors = new HashMap<>();
     }
 
     public Domain getDomain() { return domain; }
@@ -40,6 +38,10 @@ public class Variable {
         }
 
         constraints.put(constraint.getName(), constraint);
+    }
+
+    public void removeValues(Set<Integer> values) {
+        values.forEach(domain::removeValue);
     }
 
     private void getNeighbors() {
@@ -69,8 +71,8 @@ public class Variable {
     }
 
     private String getDomainRepr() {
-        List<String> domainValueStr = Arrays.stream(domain.getValues())
-                .mapToObj(d -> String.format("%d", d))
+        List<String> domainValueStr = domain.getValues().stream()
+                .map(d -> String.format("%d", d))
                 .collect(Collectors.toList());
 
         return "{" + String.join(",", domainValueStr) + "}";
