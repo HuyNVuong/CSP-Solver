@@ -18,10 +18,15 @@ public class Constraint {
 
     public Set<BinaryPair> binaryConstraintValueLookup;
 
+    public String name;
+
+    public String definition;
+
     public final int arity;
 
     public Constraint(PConstraint constraint) {
         constraintRef = constraint;
+
         variableKeys = Arrays.stream(constraint.getScope())
                 .map(PVariable::getName)
                 .collect(Collectors.toList());
@@ -29,6 +34,7 @@ public class Constraint {
             binaryConstraintValueLookup = Arrays.stream(conExtend.getRelation().getTuples())
                     .map(tuple -> new BinaryPair(tuple[0], tuple[1]))
                     .collect(Collectors.toSet());
+            definition = conExtend.getRelation().getSemantics();
         }
         arity = constraint.getArity();
     }
