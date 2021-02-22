@@ -21,7 +21,7 @@ public class Domain {
 
     public Set<Integer> getInitialDomain() { return initialDomain; }
 
-    public Set<Integer> getValues() {
+    public Set<Integer> getCurrentDomain() {
         return currentDomain;
     }
 

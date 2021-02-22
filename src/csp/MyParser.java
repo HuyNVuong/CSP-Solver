@@ -13,9 +13,11 @@ public class MyParser {
 
     private List<Variable> variables;
 
-    private List<Constraint> constraints;
+    private final List<Constraint> constraints;
 
     private final InstanceParser parser;
+
+    public String name;
 
     public MyParser(String fileName) {
         parser = new InstanceParser();
@@ -25,9 +27,7 @@ public class MyParser {
 
     public void parse() {
         parser.parse(false);
-
-        System.out.printf("Instance name: %s\n", parser.getInstanceName());
-
+        name = parser.getInstanceName();
         PVariable[] parserVariables = parser.getVariables();
 
         variables = Arrays.stream(parserVariables).map(Variable::new).collect(Collectors.toList());
@@ -53,7 +53,7 @@ public class MyParser {
         constraints.forEach(System.out::println);
     }
 
-    public List<Variable> getVariable() {
+    public List<Variable> getVariables() {
         return variables;
     }
 

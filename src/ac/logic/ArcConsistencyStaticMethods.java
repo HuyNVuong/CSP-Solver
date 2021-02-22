@@ -1,36 +1,70 @@
 package ac.logic;
 
+import ac.models.ReviseResponse;
 import csp.BinaryPair;
 import csp.Constraint;
 import csp.Variable;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ArcConsistencyStaticMethods {
-    public static boolean revise(Variable xi, Variable xj, Constraint constraint) {
+    static int cc;
+
+    public static ReviseResponse revise(Variable xi, Variable xj, Constraint constraint, boolean pairReversed) {
         var domainModified = false;
-        System.out.println(Arrays.toString(constraint.binaryConstraintValueLookup.toArray()));
-        var valuesToRemove = new HashSet<Integer>();
-        for (var ai : xi.getDomain().getValues()) {
-            var valuesHaveNoRelation = !supported(ai, xj.getDomain().getValues(), constraint);
-            if (valuesHaveNoRelation) {
-                domainModified = true;
-                valuesToRemove.add(ai);
+        cc = 0;
+        Set<Integer> valuesToRemove;
+        if (xj == null) {
+            valuesToRemove = xi.getDomain().getCurrentDomain().stream().filter(val -> {
+                if (constraint.isIntension)
+                    return constraint.intensionEvaluator.apply(new int[]{val}) != 0;
+                return switch (constraint.definition) {
+                    case "conflicts" -> constraint.unaryConstraintValueLookup.contains(val);
+                    case "supports" -> !constraint.unaryConstraintValueLookup.contains(val);
+                    default -> false;
+                };
+            }).collect(Collectors.toSet());
+        } else {
+            valuesToRemove = new HashSet<>();
+            for (var ai : xi.getDomain().getCurrentDomain()) {
+                var valuesHaveNoRelation = !binarySupported(ai, xj.getDomain().getCurrentDomain(), constraint, pairReversed);
+                if (valuesHaveNoRelation) {
+                    domainModified = true;
+                    valuesToRemove.add(ai);
+                }
             }
         }
-        
+
         xi.removeValues(valuesToRemove);
-        return domainModified;
+        return new ReviseResponse(cc, domainModified, valuesToRemove.size());
     }
 
-    private static boolean supported(int ai, Set<Integer> xjDomain, Constraint constraint) {
-        return switch (constraint.definition) {
-            case "conflicts" -> xjDomain.stream().noneMatch(aj -> constraint.binaryConstraintValueLookup.contains(new BinaryPair(ai, aj)));
-            case "supports"  -> xjDomain.stream().anyMatch(aj -> constraint.binaryConstraintValueLookup.contains(new BinaryPair(ai, aj)));
-            default          -> false;
+    private static boolean binarySupported(int ai, Set<Integer> xjDomain, Constraint constraint, boolean pairReversed) {
+        if (constraint.isIntension) {
+            return xjDomain.stream().anyMatch(aj -> {
+                cc++;
+                var pair = pairReversed
+                        ? new int[]{ai, aj}
+                        : new int[]{aj, ai};
+                return constraint.intensionEvaluator.apply(pair) == 0;
+            });
+        }
+
+        Function<Set<BinaryPair>, Boolean> extensionValidator = lookup -> {
+            var pairLookedUp = xjDomain.stream().filter(aj -> lookup.contains(new BinaryPair(ai, aj))).count();
+            cc += pairLookedUp;
+            return switch (constraint.definition) {
+                case "conflicts" -> xjDomain.stream().anyMatch(aj -> !lookup.contains(new BinaryPair(ai, aj)));
+                case "supports" -> xjDomain.stream().anyMatch(aj -> lookup.contains(new BinaryPair(ai, aj)));
+                default -> false;
+            };
         };
 
+        return pairReversed
+                ? extensionValidator.apply(constraint.binaryConstraintValueLookup)
+                : extensionValidator.apply(constraint.reversedBinaryConstraintValueLookup);
     }
 }

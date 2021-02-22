@@ -71,11 +71,16 @@ public class Variable {
     }
 
     private String getDomainRepr() {
-        List<String> domainValueStr = domain.getValues().stream()
+        List<String> domainValueStr = domain.getCurrentDomain().stream()
                 .map(d -> String.format("%d", d))
                 .collect(Collectors.toList());
 
         return "{" + String.join(",", domainValueStr) + "}";
+    }
+
+    public double logProduct() {
+        return Math.log(domain.getCurrentDomain().stream().reduce(1, (a, b) -> a * b))
+                / Math.log(2);
     }
 
     public String toString() {
