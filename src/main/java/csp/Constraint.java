@@ -5,10 +5,7 @@ import abscon.instance.components.PExtensionConstraint;
 import abscon.instance.components.PIntensionConstraint;
 import abscon.instance.components.PVariable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -16,6 +13,7 @@ public class Constraint {
 
     private final PConstraint constraintRef;
     private List<Variable> variables;
+//    private HashSet<Variable> variablesLookup;
     private final List<String> variableKeys;
 
     public Set<BinaryPair> binaryConstraintValueLookup;
@@ -64,6 +62,8 @@ public class Constraint {
     public List<Variable> getVariables() {
         return variables;
     }
+
+    public boolean contains(String v) { return variableKeys.contains(v); }
 
     public String toString() {
         String repr = "";

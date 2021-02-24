@@ -1,6 +1,7 @@
 all:
 	mkdir -p bin
-	javac -J-Xmx256m -d bin -sourcepath src src/csp/Program.java src/abscon/instance/intension/*/*.java
-	jar -J-Xmx256m cfm csp.jar src/META-INF/MANIFEST.MF -C bin .
+	find -name "*.java" > sources.txt
+	javac --release 15 --enable-preview -d bin -sourcepath src @sources.txt
+	jar -J-Xmx256m cfm csp.jar src/main/java/META-INF/MANIFEST.MF -C bin .
 clean:
 	rm -rf bin/* csp.jar

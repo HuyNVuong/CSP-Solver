@@ -44,7 +44,7 @@ public class Variable {
         values.forEach(domain::removeValue);
     }
 
-    private void getNeighbors() {
+    public List<Variable> getNeighbors() {
         for (PConstraint con : constraints.values()) {
             for (PVariable neighbor : con.getScope()) {
                 if (neighbor.getName().equals(name))
@@ -54,7 +54,7 @@ public class Variable {
             }
         }
 
-        neighbors.values().stream().map(Variable::new).collect(Collectors.toList());
+        return neighbors.values().stream().map(Variable::new).collect(Collectors.toList());
     }
 
     private String getConstraintRepr() {

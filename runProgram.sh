@@ -1,1 +1,1 @@
-java -Xmx256m -jar csp.jar $@
+java -Xmx256m -jar --enable-preview csp.jar $@

@@ -14,12 +14,17 @@ public class Program {
             parser.parse();
             parser.verbose();
         } else if (args.length == 4) {
-            var acSolver = args[3].equals("ac1")
-                    ? new AcSolver(ArcConsistency_1::solve)
-                    : new AcSolver(ArcConsistency_3::solve);
-            acSolver.loadInstance(args[1]);
-            acSolver.solve();
-            acSolver.report();
+            var acSolver = switch (args[3]) {
+                case "ac1" -> new AcSolver(ArcConsistency_1::solve);
+                case "ac3" -> new AcSolver(ArcConsistency_3::solve);
+                default    -> null;
+            };
+            if (acSolver != null) {
+                acSolver.loadInstance(args[1]);
+                acSolver.solve();
+                acSolver.report();
+            }
+
         }
 
     }

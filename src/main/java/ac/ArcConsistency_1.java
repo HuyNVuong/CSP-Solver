@@ -16,20 +16,20 @@ public class ArcConsistency_1 {
                     case 1:
                         var x = constraint.getVariables().get(0);
                         var xRevised = ArcConsistencyStaticMethods.revise(x, null, constraint, false);
-                        isDomainModified |= xRevised.revised;
+                        isDomainModified |= xRevised.domainModified;
                         break;
                     case 2:
                         var xi = constraint.getVariables().get(0);
                         var xj = constraint.getVariables().get(1);
                         var xiRevised = ArcConsistencyStaticMethods.revise(xi, xj, constraint, false);
-                        if (xiRevised.revised && xi.getDomain().getCurrentDomain().isEmpty()) {
+                        if (xiRevised.domainModified && xi.getDomain().getCurrentDomain().isEmpty()) {
                             response.isArcConsistent = false;
                             response.cc += (xiRevised.cc);
                             response.fVal += (xiRevised.fVal);
                             return response;
                         }
                         var xjRevised = ArcConsistencyStaticMethods.revise(xj, xi, constraint, true);
-                        if (xjRevised.revised && xj.getDomain().getCurrentDomain().isEmpty()) {
+                        if (xjRevised.domainModified && xj.getDomain().getCurrentDomain().isEmpty()) {
                             response.isArcConsistent = false;
                             response.cc += (xiRevised.cc + xjRevised.cc);
                             response.fVal += (xiRevised.fVal + xjRevised.fVal);
@@ -37,7 +37,7 @@ public class ArcConsistency_1 {
                         }
                         response.cc += (xiRevised.cc + xjRevised.cc);
                         response.fVal += (xiRevised.fVal + xjRevised.fVal);
-                        isDomainModified = xiRevised.revised || xjRevised.revised;
+                        isDomainModified = xiRevised.domainModified || xjRevised.domainModified;
                     default:
                         break;
                 }
