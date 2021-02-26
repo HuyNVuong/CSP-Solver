@@ -11,11 +11,14 @@ public class ArcConsistency_1 {
         var isDomainModified = false;
         var response = new AcResponse();
         do {
+            isDomainModified = false;
             for (var constraint : constraints) {
                 switch (constraint.arity) {
                     case 1:
                         var x = constraint.getVariables().get(0);
                         var xRevised = ArcConsistencyStaticMethods.revise(x, null, constraint, false);
+                        response.cc += xRevised.cc;
+                        response.fVal += xRevised.fVal;
                         isDomainModified |= xRevised.domainModified;
                         break;
                     case 2:
@@ -37,7 +40,8 @@ public class ArcConsistency_1 {
                         }
                         response.cc += (xiRevised.cc + xjRevised.cc);
                         response.fVal += (xiRevised.fVal + xjRevised.fVal);
-                        isDomainModified = xiRevised.domainModified || xjRevised.domainModified;
+                        isDomainModified |= (xiRevised.domainModified || xjRevised.domainModified);
+                        break;
                     default:
                         break;
                 }

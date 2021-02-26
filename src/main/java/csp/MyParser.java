@@ -40,7 +40,7 @@ public class MyParser {
             constraints.add(constraint);
             constraint.setVariables(variablesLookup);
             for (PVariable variable : con.getScope()) {
-                variablesLookup.get(variable.getName()).addConstraint(con);
+                variablesLookup.get(variable.getName()).addConstraint(constraint);
             }
         }
     }

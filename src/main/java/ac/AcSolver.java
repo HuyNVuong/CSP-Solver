@@ -5,8 +5,12 @@ import csp.Constraint;
 import csp.MyParser;
 import csp.Variable;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -14,33 +18,45 @@ public class AcSolver {
     private double timeSetup;
 
     private long cpuTime;
-
     private int cc;
-
     private int fVal;
-
     private double iSize;
-
     private double fSize;
-
     private double fEffect;
-
     private MyParser parser;
 
     private final Function<List<Constraint>, AcResponse> arcConsistencyFunction;
-
     private final Timer timer;
+
+    private List<Long> cpuTimes;
+    private List<Integer> ccs;
+    private List<Integer> fVals;
+    private List<Double> iSizes;
+    private List<Double> fSizes;
+    private List<Double> fEffects;
 
     public AcSolver() {
         arcConsistencyFunction = ArcConsistency_1::solve;
         timer = new Timer();
         fEffect = -1;
+        cpuTimes = new ArrayList<>();
+        ccs = new ArrayList<>();
+        fVals = new ArrayList<>();
+        iSizes = new ArrayList<>();
+        fSizes = new ArrayList<>();
+        fEffects = new ArrayList<>();
     }
 
     public AcSolver(Function<List<Constraint>, AcResponse> acSolverFunction) {
         arcConsistencyFunction = acSolverFunction;
         timer = new Timer();
         fEffect = -1;
+        cpuTimes = new ArrayList<>();
+        ccs = new ArrayList<>();
+        fVals = new ArrayList<>();
+        iSizes = new ArrayList<>();
+        fSizes = new ArrayList<>();
+        fEffects = new ArrayList<>();
     }
 
     public void loadInstance(String problem) {
@@ -71,11 +87,20 @@ public class AcSolver {
                     })
                     .sum();
             System.out.println("Problem is arc-consistent");
+        } else {
+            fEffect = -1;
         }
 
         cpuTime = endTime - startTime;
         cc = acResponse.cc;
         fVal = acResponse.fVal;
+
+        ccs.add(cc);
+        cpuTimes.add(cpuTime);
+        fVals.add(fVal);
+        iSizes.add(iSize);
+        fSizes.add(fSize);
+        fEffects.add(fEffect);
     }
 
     public long getCpuTime() {
@@ -89,7 +114,32 @@ public class AcSolver {
         return v1.logProduct() + v2.logProduct();
     }
 
+    public void buildExcelReport() {
+        var dataLines = new ArrayList<String[]>();
+        for (int i = 0; i < ccs.size(); i++) {
+            dataLines.add(new String[]{
+                    "" + ccs.get(i),
+                    "" + cpuTimes.get(i) / 1000000.0,
+                    "" + fVals.get(i),
+                    "" + iSizes.get(i),
+                    "" + (Double.isFinite(fSizes.get(i)) ? fSizes.get(i) : "false"),
+                    "" + (fEffects.get(i) != -1 ? fEffects.get(i) : "false")
+            });
+        }
+        var csvOutputFile = new File("out.csv");
+        try (var pw = new PrintWriter(csvOutputFile)) {
+            dataLines.stream().map(this::convertToCSV).forEach(pw::println);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String convertToCSV(String[] data) {
+        return String.join(",", data);
+    }
+
     public void report() {
+
         System.out.printf("Instance name: %s\n", parser.name);
         System.out.printf("cc: %d\n", cc);
         System.out.printf("cpu: %.3f\n", cpuTime / 1000000.0);

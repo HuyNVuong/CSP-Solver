@@ -1,6 +1,5 @@
 package csp;
 
-import abscon.instance.components.PConstraint;
 import abscon.instance.components.PVariable;
 
 import java.util.*;
@@ -12,11 +11,11 @@ public class Variable {
 
     private String name;
 
-    private Map<String, PVariable> neighbors;
+    private Map<String, Variable> neighbors;
 
-    private Map<String, PConstraint> constraints;
+    private Map<String, Constraint> constraints;
 
-    private Map<String, PConstraint> constraintOfNeighbors;
+    private Map<String, Constraint> constraintOfNeighbors;
 
     public Variable(PVariable var) {
         name = var.getName();
@@ -32,12 +31,8 @@ public class Variable {
         return name;
     }
 
-    public void addConstraint(PConstraint constraint) {
-        if (constraints.containsKey(constraint.getName())) {
-            return;
-        }
-
-        constraints.put(constraint.getName(), constraint);
+    public void addConstraint(Constraint constraint) {
+        constraints.putIfAbsent(constraint.name, constraint);
     }
 
     public void removeValues(Set<Integer> values) {
@@ -45,8 +40,8 @@ public class Variable {
     }
 
     public List<Variable> getNeighbors() {
-        for (PConstraint con : constraints.values()) {
-            for (PVariable neighbor : con.getScope()) {
+        for (var con : constraints.values()) {
+            for (var neighbor : con.getVariables()) {
                 if (neighbor.getName().equals(name))
                     continue;
                 neighbors.putIfAbsent(neighbor.getName(), neighbor);
@@ -54,7 +49,11 @@ public class Variable {
             }
         }
 
-        return neighbors.values().stream().map(Variable::new).collect(Collectors.toList());
+        return new ArrayList<>(neighbors.values());
+    }
+
+    public Constraint getSharedConstraint(String neighborName) {
+        return constraintOfNeighbors.get(neighborName);
     }
 
     private String getConstraintRepr() {

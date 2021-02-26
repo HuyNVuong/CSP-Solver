@@ -24,7 +24,7 @@ public class ArcConsistency_3 {
             var item = queue.poll();
             var xi = item.xi;
             var xj = item.constraint.arity == 2 ? item.xj : null;
-            var reviseResponse = ArcConsistencyStaticMethods.revise(xi, xj, item.constraint, false);
+            var reviseResponse = ArcConsistencyStaticMethods.revise(xi, xj, item.constraint, item.reversed);
             acResponse.fVal += reviseResponse.fVal;
             acResponse.cc += reviseResponse.cc;
             if (xi.getDomain().getCurrentDomain().isEmpty()) {
@@ -33,7 +33,12 @@ public class ArcConsistency_3 {
             }
             if (reviseResponse.domainModified) {
                 for (var xk : xi.getNeighbors()) {
-                    queue.add(new QueueTuple(xk, xj, item.constraint));
+                    if (xj != null && !xk.getName().equals(xj.getName())) {
+                        var sharedConstraint = xk.getSharedConstraint(xj.getName());
+                        if (sharedConstraint != null)
+                            queue.add(new QueueTuple(xk, xj, sharedConstraint));
+                    }
+
                 }
             }
         }

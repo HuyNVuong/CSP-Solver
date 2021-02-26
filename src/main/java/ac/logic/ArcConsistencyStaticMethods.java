@@ -27,6 +27,7 @@ public class ArcConsistencyStaticMethods {
                     default -> false;
                 };
             }).collect(Collectors.toSet());
+            domainModified = valuesToRemove.size() > 0;
         } else {
             valuesToRemove = new HashSet<>();
             for (var ai : xi.getDomain().getCurrentDomain()) {
@@ -47,8 +48,8 @@ public class ArcConsistencyStaticMethods {
             return xjDomain.stream().anyMatch(aj -> {
                 cc++;
                 var pair = pairReversed
-                        ? new int[]{ai, aj}
-                        : new int[]{aj, ai};
+                        ? new int[]{aj, ai}
+                        : new int[]{ai, aj};
                 return constraint.intensionEvaluator.apply(pair) == 0;
             });
         }

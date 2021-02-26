@@ -27,9 +27,15 @@ public class Constraint {
     public String definition;
     public final int arity;
 
+    public Constraint(){
+        arity = 0;
+        constraintRef = null;
+        variableKeys = null;
+    }
+
     public Constraint(PConstraint constraint) {
         constraintRef = constraint;
-
+        name = constraint.getName();
         variableKeys = Arrays.stream(constraint.getScope())
                 .map(PVariable::getName)
                 .collect(Collectors.toList());
