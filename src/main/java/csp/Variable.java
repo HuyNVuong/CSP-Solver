@@ -56,6 +56,10 @@ public class Variable {
         return constraintOfNeighbors.get(neighborName);
     }
 
+    public List<Constraint> getAllConstraints() {
+        return new ArrayList<>(constraints.values());
+    }
+
     private String getConstraintRepr() {
         List<String> constraintKeys = new ArrayList<>(constraints.keySet());
 

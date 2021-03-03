@@ -65,7 +65,7 @@ public class ArcConsistencyStaticMethods {
         };
 
         return pairReversed
-                ? extensionValidator.apply(constraint.binaryConstraintValueLookup)
-                : extensionValidator.apply(constraint.reversedBinaryConstraintValueLookup);
+                ? extensionValidator.apply(constraint.reversedBinaryConstraintValueLookup)
+                : extensionValidator.apply(constraint.binaryConstraintValueLookup);
     }
 }

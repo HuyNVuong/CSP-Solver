@@ -9,6 +9,13 @@ public class QueueTuple {
     public Constraint constraint;
     public boolean reversed;
 
+    public QueueTuple(Variable xi, Constraint constraint) {
+        this.xi = xi;
+        this.xj = null;
+        this.constraint = constraint;
+        reversed = false;
+    }
+
     public QueueTuple(Variable xi, Variable xj, Constraint constraint) {
         this.xi = xi;
         this.xj = xj;
