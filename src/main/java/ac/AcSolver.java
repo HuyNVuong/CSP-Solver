@@ -23,17 +23,17 @@ public class AcSolver {
     private double iSize;
     private double fSize;
     private double fEffect;
-    private MyParser parser;
+    public MyParser parser;
 
     private final Function<List<Constraint>, AcResponse> arcConsistencyFunction;
     private final Timer timer;
 
-    private List<Long> cpuTimes;
-    private List<Integer> ccs;
-    private List<Integer> fVals;
-    private List<Double> iSizes;
-    private List<Double> fSizes;
-    private List<Double> fEffects;
+    private final List<Long> cpuTimes;
+    private final List<Integer> ccs;
+    private final List<Integer> fVals;
+    private final List<Double> iSizes;
+    private final List<Double> fSizes;
+    private final List<Double> fEffects;
 
     public AcSolver() {
         arcConsistencyFunction = ArcConsistency_1::solve;

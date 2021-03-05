@@ -15,10 +15,8 @@ public class ArcConsistency_3 {
         Queue<QueueTuple> queue = new LinkedList<>();
         for (var constraint : constraints) {
             switch (constraint.arity) {
-                case 1:
-                    queue.add(new QueueTuple(constraint.getVariables().get(0), constraint));
-                    break;
-                case 2:
+                case 1 -> queue.add(new QueueTuple(constraint.getVariables().get(0), constraint));
+                case 2 -> {
                     queue.add(new QueueTuple(
                             constraint.getVariables().get(0),
                             constraint.getVariables().get(1),
@@ -29,11 +27,9 @@ public class ArcConsistency_3 {
                             constraint.getVariables().get(0),
                             constraint
                     ));
-                    break;
+                }
             }
-
         }
-
 
         while (!queue.isEmpty()) {
             var item = queue.poll();

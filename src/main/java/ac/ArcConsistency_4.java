@@ -94,7 +94,6 @@ public class ArcConsistency_4 {
                             acResponse.cc++;
                             counters.put(new VVPV(vi, di, vj), counters.get(new VVPV(vi, di, vj)) + 1);
                             S.get(new VVP(vi, di)).add(new VVP(vj, dj));
-
                         }
                     }
                     if (!binaryLookup.contains(new BinaryPair(di, dj))) {

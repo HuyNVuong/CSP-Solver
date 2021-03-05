@@ -37,6 +37,7 @@ public class Timer {
         try {
             response = acSolverFunction.call();
             response.cpuTime = getCpuTime() - captureTime;
+            System.out.println(getCpuTime() - captureTime);
             return response;
         } catch (Exception e) {
             response = new AcResponse();

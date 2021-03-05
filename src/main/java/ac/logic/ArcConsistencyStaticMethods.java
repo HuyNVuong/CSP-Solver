@@ -43,7 +43,7 @@ public class ArcConsistencyStaticMethods {
         return new ReviseResponse(cc, domainModified, valuesToRemove.size());
     }
 
-    private static boolean binarySupported(int ai, Set<Integer> xjDomain, Constraint constraint, boolean pairReversed) {
+    public static boolean binarySupported(int ai, Set<Integer> xjDomain, Constraint constraint, boolean pairReversed) {
         if (constraint.isIntension) {
             return xjDomain.stream().anyMatch(aj -> {
                 cc++;

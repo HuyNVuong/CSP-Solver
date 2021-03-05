@@ -4,6 +4,7 @@ import ac.AcSolver;
 import ac.ArcConsistency_1;
 import ac.ArcConsistency_3;
 import ac.ArcConsistency_4;
+import bt.BackTracking;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -19,7 +20,12 @@ public class Program {
             var parser = new MyParser(args[1]);
             parser.parse();
             parser.verbose();
+//            var acSolver = new AcSolver(ArcConsistency_1::solve);
+//            acSolver.loadInstance(args[1]);
+//            acSolver.solve();
+            var paths = BackTracking.bcssp(parser.getVariables());
         } else if (args.length == 4) {
+
             var acSolver = switch (args[3]) {
                 case "ac1" -> new AcSolver(ArcConsistency_1::solve);
                 case "ac3" -> new AcSolver(ArcConsistency_3::solve);
