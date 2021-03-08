@@ -75,7 +75,7 @@ public class ArcConsistency_4 {
                 S.putIfAbsent(new VVP(vi, di), new ArrayList<>());
 
                 counters.putIfAbsent(new VVPV(vi, di, vj), 0);
-                if (constraint.isIntension) {
+                if (constraint.isIntension()) {
                     acResponse.cc++;
                     var pair = nominalOrder
                             ? new int[]{di, dj}

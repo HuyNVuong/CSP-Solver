@@ -21,7 +21,7 @@ public class Constraint {
     public Set<Integer> unaryConstraintValueLookup;
 
     public Function<int[], Long> intensionEvaluator;
-    public boolean isIntension;
+    private boolean isIntension;
 
     public String name;
     public String definition;
@@ -95,4 +95,7 @@ public class Constraint {
     }
 
 
+    public boolean isIntension() {
+        return isIntension;
+    }
 }

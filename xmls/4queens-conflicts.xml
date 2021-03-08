@@ -1,4 +1,4 @@
-<instance>
+     <instance>
     <presentation name="4q-conflicts" maxConstraintArity="2" format="XCSP 2.0"/>
     <domains nbDomains="1">
         <domain name="D0" nbValues="4">1..4</domain>

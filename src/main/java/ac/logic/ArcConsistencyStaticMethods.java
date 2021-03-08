@@ -19,7 +19,7 @@ public class ArcConsistencyStaticMethods {
         Set<Integer> valuesToRemove;
         if (xj == null) {
             valuesToRemove = xi.getDomain().getCurrentDomain().stream().filter(val -> {
-                if (constraint.isIntension)
+                if (constraint.isIntension())
                     return constraint.intensionEvaluator.apply(new int[]{val}) != 0;
                 return switch (constraint.definition) {
                     case "conflicts" -> constraint.unaryConstraintValueLookup.contains(val);
@@ -44,7 +44,7 @@ public class ArcConsistencyStaticMethods {
     }
 
     public static boolean binarySupported(int ai, Set<Integer> xjDomain, Constraint constraint, boolean pairReversed) {
-        if (constraint.isIntension) {
+        if (constraint.isIntension()) {
             return xjDomain.stream().anyMatch(aj -> {
                 cc++;
                 var pair = pairReversed

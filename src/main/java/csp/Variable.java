@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 public class Variable {
 
     private final Domain domain;
+    private final String name;
 
-    private String name;
+    protected final Map<String, Variable> neighbors;
+    protected final Map<String, Constraint> constraints;
+    protected final Map<String, Constraint> constraintOfNeighbors;
 
-    private Map<String, Variable> neighbors;
-
-    private Map<String, Constraint> constraints;
-
-    private Map<String, Constraint> constraintOfNeighbors;
+    public boolean hasUnaryConstraint;
+    public Constraint unaryConstraint;
 
     public Variable(PVariable var) {
         name = var.getName();

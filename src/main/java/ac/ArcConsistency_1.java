@@ -25,7 +25,7 @@ public class ArcConsistency_1 {
                         var xi = constraint.getVariables().get(0);
                         var xj = constraint.getVariables().get(1);
                         var xiRevised = ArcConsistencyStaticMethods.revise(xi, xj, constraint, false);
-                        if (xiRevised.domainModified && xi.getDomain().getCurrentDomain().isEmpty()) {
+                    if (xiRevised.domainModified && xi.getDomain().getCurrentDomain().isEmpty()) {
                             response.isArcConsistent = false;
                             response.cc += (xiRevised.cc);
                             response.fVal += (xiRevised.fVal);

@@ -41,8 +41,14 @@ public class MyParser {
             constraint.setVariables(variablesLookup);
             for (PVariable variable : con.getScope()) {
                 variablesLookup.get(variable.getName()).addConstraint(constraint);
+                if (constraint.arity == 1) {
+                    variablesLookup.get(variable.getName()).unaryConstraint = constraint;
+                    variablesLookup.get(variable.getName()).hasUnaryConstraint = true;
+                }
             }
         }
+
+        variables.forEach(Variable::getNeighbors);
     }
 
     public void verbose() {
