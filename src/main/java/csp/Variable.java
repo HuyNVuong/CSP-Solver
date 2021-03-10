@@ -13,6 +13,7 @@ public class Variable {
     protected final Map<String, Variable> neighbors;
     protected final Map<String, Constraint> constraints;
     protected final Map<String, Constraint> constraintOfNeighbors;
+    protected final Map<String, ArrayList<Constraint>> variablesShareManyConstraints;
 
     public boolean hasUnaryConstraint;
     public Constraint unaryConstraint;
@@ -23,6 +24,7 @@ public class Variable {
         neighbors = new HashMap<>();
         constraints = new HashMap<>();
         constraintOfNeighbors = new HashMap<>();
+        variablesShareManyConstraints = new HashMap<>();
     }
 
     public Domain getDomain() { return domain; }
@@ -45,11 +47,28 @@ public class Variable {
                 if (neighbor.getName().equals(name))
                     continue;
                 neighbors.putIfAbsent(neighbor.getName(), neighbor);
+                if (constraintOfNeighbors.containsKey(neighbor.getName())) {
+                    variablesShareManyConstraints.putIfAbsent(neighbor.getName(), new ArrayList<>());
+                    variablesShareManyConstraints.get(neighbor.getName()).add(constraintOfNeighbors.get(neighbor.getName()));
+                    variablesShareManyConstraints.get(neighbor.getName()).add(con);
+                }
                 constraintOfNeighbors.putIfAbsent(neighbor.getName(), con);
             }
         }
 
         return new ArrayList<>(neighbors.values());
+    }
+
+    public boolean shareManyConstraintsWithNeighbor(String neighborKey) {
+        if (variablesShareManyConstraints.containsKey(neighborKey)) {
+            return variablesShareManyConstraints.get(neighborKey).size() > 0;
+        }
+
+        return false;
+    }
+
+    public List<Constraint> getAllConstraintForPairs(String neighborKey) {
+        return variablesShareManyConstraints.get(neighborKey);
     }
 
     public Constraint getSharedConstraint(String neighborName) {

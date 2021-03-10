@@ -1,107 +1,319 @@
 <instance>
-    <presentation name="zebra" maxConstraintArity="2" format="XCSP 2.0"/>
+    <presentation name="zebra-intension-binary" maxConstraintArity="2" format="XCSP 2.0"/>
     <domains nbDomains="1">
         <domain name="D0" nbValues="5">1..5</domain>
     </domains>
     <variables nbVariables="25">
-        <variable name="Norway" domain="D0"/>
-        <variable name="England" domain="D0"/>
-        <variable name="Japan" domain="D0"/>
-        <variable name="Spain" domain="D0"/>
-        <variable name="Ukrane" domain="D0"/>
-        <variable name="blue" domain="D0"/>
-        <variable name="red" domain="D0"/>
-        <variable name="green" domain="D0"/>
-        <variable name="yellow" domain="D0"/>
-        <variable name="ivory" domain="D0"/>
-        <variable name="coffee" domain="D0"/>
-        <variable name="tea" domain="D0"/>
-        <variable name="oj" domain="D0"/>
-        <variable name="milk" domain="D0"/>
-        <variable name="water" domain="D0"/>
-        <variable name="horse" domain="D0"/>
-        <variable name="snail" domain="D0"/>
-        <variable name="zebra" domain="D0"/>
-        <variable name="fox" domain="D0"/>
-        <variable name="dog" domain="D0"/>
-        <variable name="Chesterfield" domain="D0"/>
-        <variable name="Parliment" domain="D0"/>
-        <variable name="LuckyStripe" domain="D0"/>
-        <variable name="Kool" domain="D0"/>
-        <variable name="OldGold" domain="D0"/>
+        <variable name="V0" domain="D0"/>
+        <variable name="V1" domain="D0"/>
+        <variable name="V2" domain="D0"/>
+        <variable name="V3" domain="D0"/>
+        <variable name="V4" domain="D0"/>
+        <variable name="V5" domain="D0"/>
+        <variable name="V6" domain="D0"/>
+        <variable name="V7" domain="D0"/>
+        <variable name="V8" domain="D0"/>
+        <variable name="V9" domain="D0"/>
+        <variable name="V10" domain="D0"/>
+        <variable name="V11" domain="D0"/>
+        <variable name="V12" domain="D0"/>
+        <variable name="V13" domain="D0"/>
+        <variable name="V14" domain="D0"/>
+        <variable name="V15" domain="D0"/>
+        <variable name="V16" domain="D0"/>
+        <variable name="V17" domain="D0"/>
+        <variable name="V18" domain="D0"/>
+        <variable name="V19" domain="D0"/>
+        <variable name="V20" domain="D0"/>
+        <variable name="V21" domain="D0"/>
+        <variable name="V22" domain="D0"/>
+        <variable name="V23" domain="D0"/>
+        <variable name="V24" domain="D0"/>
     </variables>
-    <relations nbRelations="6">
-        <relation name="equal" arity="2" nbTuples="5" semantics="supports">1 1|2 2|3 3|4 4|5 5</relation>
-        <relation name="plusOne" arity="2" nbTuples="4" semantics="supports">2 1|3 2|4 3|5 4</relation>
-        <relation name="nextTo" arity="2" nbTuples="8" semantics="supports">1 2|2 1|2 3|3 2|3 4|4 3|4 5|5 4</relation>
-        <relation name="mutex" arity="2" nbTuples="5" semantics="conflicts">1 1|2 2|3 3|4 4|5 5</relation>
-        <relation name="uNorway" arity="1" nbTuples="1" semantics="supports">1</relation>
-        <relation name="umilk" arity="1" nbTuples="1" semantics="supports">3</relation>
-    </relations>
+    <predicates nbPredicates="15">
+        <predicate name="P0">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P1">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P2">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P3">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P4">
+            <parameters>int X0</parameters>
+            <expression>
+                <functional>eq(X0,1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P5">
+            <parameters>int X0</parameters>
+            <expression>
+                <functional>eq(X0,3)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P6">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P7">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P8">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P9">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,X1)</functional>
+            </expression>
+        </predicate>
+        <predicate name="P10">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>eq(X0,add(X1,1))</functional>
+            </expression>
+        </predicate>
+        <predicate name="P11">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>or(eq(X0,sub(X1,1)),eq(X0,add(X1,1)))</functional>
+            </expression>
+        </predicate>
+        <predicate name="P12">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>or(eq(X0,sub(X1,1)),eq(X0,add(X1,1)))</functional>
+            </expression>
+        </predicate>
+        <predicate name="P13">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>or(eq(X0,sub(X1,1)),eq(X0,add(X1,1)))</functional>
+            </expression>
+        </predicate>
+        <predicate name="P14">
+            <parameters>int X0 int X1</parameters>
+            <expression>
+                <functional>ne (X0,X1)</functional>
+            </expression>
+        </predicate>
+    </predicates>
     <constraints nbConstraints="64">
-        <constraint name="C0" arity="2" scope="England red" reference="equal"/>
-        <constraint name="C1" arity="2" scope="Spain dog" reference="equal"/>
-        <constraint name="C2" arity="2" scope="coffee green" reference="equal"/>
-        <constraint name="C3" arity="2" scope="Ukrane tea" reference="equal"/>
-        <constraint name="C4" arity="2" scope="snail OldGold" reference="equal"/>
-        <constraint name="C5" arity="2" scope="Kool yellow" reference="equal"/>
-        <constraint name="C6" arity="2" scope="LuckyStripe oj" reference="equal"/>
-        <constraint name="C7" arity="2" scope="Japan Parliment" reference="equal"/>
-        <constraint name="C8" arity="2" scope="green ivory" reference="plusOne"/>
-        <constraint name="C9" arity="2" scope="Chesterfield fox" reference="nextTo"/>
-        <constraint name="C10" arity="2" scope="Kool horse" reference="nextTo"/>
-        <constraint name="C11" arity="2" scope="Norway blue" reference="nextTo"/>
-        <constraint name="C12" arity="2" scope="Norway England" reference="mutex"/>
-        <constraint name="C13" arity="2" scope="Norway Japan" reference="mutex"/>
-        <constraint name="C14" arity="2" scope="Norway Spain" reference="mutex"/>
-        <constraint name="C15" arity="2" scope="Norway Ukrane" reference="mutex"/>
-        <constraint name="C16" arity="2" scope="England Japan" reference="mutex"/>
-        <constraint name="C17" arity="2" scope="England Spain" reference="mutex"/>
-        <constraint name="C18" arity="2" scope="England Ukrane" reference="mutex"/>
-        <constraint name="C19" arity="2" scope="Japan Spain" reference="mutex"/>
-        <constraint name="C20" arity="2" scope="Japan Ukrane" reference="mutex"/>
-        <constraint name="C21" arity="2" scope="Spain Ukrane" reference="mutex"/>
-        <constraint name="C22" arity="2" scope="blue red" reference="mutex"/>
-        <constraint name="C23" arity="2" scope="blue green" reference="mutex"/>
-        <constraint name="C24" arity="2" scope="blue yellow" reference="mutex"/>
-        <constraint name="C25" arity="2" scope="blue ivory" reference="mutex"/>
-        <constraint name="C26" arity="2" scope="red green" reference="mutex"/>
-        <constraint name="C27" arity="2" scope="red yellow" reference="mutex"/>
-        <constraint name="C28" arity="2" scope="red ivory" reference="mutex"/>
-        <constraint name="C29" arity="2" scope="green yellow" reference="mutex"/>
-        <constraint name="C30" arity="2" scope="green ivory" reference="mutex"/>
-        <constraint name="C31" arity="2" scope="yellow ivory" reference="mutex"/>
-        <constraint name="C32" arity="2" scope="coffee tea" reference="mutex"/>
-        <constraint name="C33" arity="2" scope="coffee oj" reference="mutex"/>
-        <constraint name="C34" arity="2" scope="coffee milk" reference="mutex"/>
-        <constraint name="C35" arity="2" scope="coffee water" reference="mutex"/>
-        <constraint name="C36" arity="2" scope="tea oj" reference="mutex"/>
-        <constraint name="C37" arity="2" scope="tea milk" reference="mutex"/>
-        <constraint name="C38" arity="2" scope="tea water" reference="mutex"/>
-        <constraint name="C39" arity="2" scope="oj milk" reference="mutex"/>
-        <constraint name="C40" arity="2" scope="oj water" reference="mutex"/>
-        <constraint name="C41" arity="2" scope="milk water" reference="mutex"/>
-        <constraint name="C42" arity="2" scope="horse snail" reference="mutex"/>
-        <constraint name="C43" arity="2" scope="horse zebra" reference="mutex"/>
-        <constraint name="C44" arity="2" scope="horse fox" reference="mutex"/>
-        <constraint name="C45" arity="2" scope="horse dog" reference="mutex"/>
-        <constraint name="C46" arity="2" scope="snail zebra" reference="mutex"/>
-        <constraint name="C47" arity="2" scope="snail fox" reference="mutex"/>
-        <constraint name="C48" arity="2" scope="snail dog" reference="mutex"/>
-        <constraint name="C49" arity="2" scope="zebra fox" reference="mutex"/>
-        <constraint name="C50" arity="2" scope="zebra dog" reference="mutex"/>
-        <constraint name="C51" arity="2" scope="fox dog" reference="mutex"/>
-        <constraint name="C52" arity="2" scope="Chesterfield Parliment" reference="mutex"/>
-        <constraint name="C53" arity="2" scope="Chesterfield LuckyStripe" reference="mutex"/>
-        <constraint name="C54" arity="2" scope="Chesterfield Kool" reference="mutex"/>
-        <constraint name="C55" arity="2" scope="Chesterfield OldGold" reference="mutex"/>
-        <constraint name="C56" arity="2" scope="Parliment LuckyStripe" reference="mutex"/>
-        <constraint name="C57" arity="2" scope="Parliment Kool" reference="mutex"/>
-        <constraint name="C58" arity="2" scope="Parliment OldGold" reference="mutex"/>
-        <constraint name="C59" arity="2" scope="LuckyStripe Kool" reference="mutex"/>
-        <constraint name="C60" arity="2" scope="LuckyStripe OldGold" reference="mutex"/>
-        <constraint name="C61" arity="2" scope="Kool OldGold" reference="mutex"/>
-        <constraint name="C62" arity="1" scope="Norway" reference="uNorway"/>
-        <constraint name="C63" arity="1" scope="milk" reference="umilk"/>
+        <constraint name="C5" arity="2" scope="V10 V1" reference="P0">
+            <parameters>V10 V1</parameters>
+        </constraint>
+        <constraint name="C6" arity="2" scope="V11 V15" reference="P1">
+            <parameters>V11 V15</parameters>
+        </constraint>
+        <constraint name="C7" arity="2" scope="V12 V5" reference="P2">
+            <parameters>V12 V5</parameters>
+        </constraint>
+        <constraint name="C8" arity="2" scope="V13 V22" reference="P3">
+            <parameters>V13 V22</parameters>
+        </constraint>
+        <constraint name="C9" arity="1" scope="V14" reference="P4">
+            <parameters>V14</parameters>
+        </constraint>
+        <constraint name="C10" arity="1" scope="V24" reference="P5">
+            <parameters>V24</parameters>
+        </constraint>
+        <constraint name="C11" arity="2" scope="V7 V20" reference="P6">
+            <parameters>V7 V20</parameters>
+        </constraint>
+        <constraint name="C12" arity="2" scope="V0 V23" reference="P7">
+            <parameters>V0 V23</parameters>
+        </constraint>
+        <constraint name="C13" arity="2" scope="V9 V18" reference="P8">
+            <parameters>V9 V18</parameters>
+        </constraint>
+        <constraint name="C14" arity="2" scope="V6 V2" reference="P9">
+            <parameters>V6 V2</parameters>
+        </constraint>
+        <constraint name="C15" arity="2" scope="V0 V4" reference="P10">
+            <parameters>V0 V4</parameters>
+        </constraint>
+        <constraint name="C16" arity="2" scope="V17 V8" reference="P11">
+            <parameters>V17 V8</parameters>
+        </constraint>
+        <constraint name="C17" arity="2" scope="V19 V6" reference="P12">
+            <parameters>V19 V6</parameters>
+        </constraint>
+        <constraint name="C18" arity="2" scope="V14 V3" reference="P13">
+            <parameters>V14 V3</parameters>
+        </constraint>
+        <constraint name="C19" arity="2" scope="V0 V1" reference="P14">
+            <parameters>V0 V1</parameters>
+        </constraint>
+        <constraint name="C20" arity="2" scope="V0 V2" reference="P14">
+            <parameters>V0 V2</parameters>
+        </constraint>
+        <constraint name="C21" arity="2" scope="V0 V3" reference="P14">
+            <parameters>V0 V3</parameters>
+        </constraint>
+        <constraint name="C22" arity="2" scope="V0 V4" reference="P14">
+            <parameters>V0 V4</parameters>
+        </constraint>
+        <constraint name="C23" arity="2" scope="V1 V2" reference="P14">
+            <parameters>V1 V2</parameters>
+        </constraint>
+        <constraint name="C24" arity="2" scope="V1 V3" reference="P14">
+            <parameters>V1 V3</parameters>
+        </constraint>
+        <constraint name="C25" arity="2" scope="V1 V4" reference="P14">
+            <parameters>V1 V4</parameters>
+        </constraint>
+        <constraint name="C26" arity="2" scope="V2 V3" reference="P14">
+            <parameters>V2 V3</parameters>
+        </constraint>
+        <constraint name="C27" arity="2" scope="V2 V4" reference="P14">
+            <parameters>V2 V4</parameters>
+        </constraint>
+        <constraint name="C28" arity="2" scope="V3 V4" reference="P14">
+            <parameters>V3 V4</parameters>
+        </constraint>
+        <constraint name="C29" arity="2" scope="V5 V6" reference="P14">
+            <parameters>V5 V6</parameters>
+        </constraint>
+        <constraint name="C30" arity="2" scope="V5 V7" reference="P14">
+            <parameters>V5 V7</parameters>
+        </constraint>
+        <constraint name="C31" arity="2" scope="V5 V8" reference="P14">
+            <parameters>V5 V8</parameters>
+        </constraint>
+        <constraint name="C32" arity="2" scope="V5 V9" reference="P14">
+            <parameters>V5 V9</parameters>
+        </constraint>
+        <constraint name="C33" arity="2" scope="V6 V7" reference="P14">
+            <parameters>V6 V7</parameters>
+        </constraint>
+        <constraint name="C34" arity="2" scope="V6 V8" reference="P14">
+            <parameters>V6 V8</parameters>
+        </constraint>
+        <constraint name="C35" arity="2" scope="V6 V9" reference="P14">
+            <parameters>V6 V9</parameters>
+        </constraint>
+        <constraint name="C36" arity="2" scope="V7 V8" reference="P14">
+            <parameters>V7 V8</parameters>
+        </constraint>
+        <constraint name="C37" arity="2" scope="V7 V9" reference="P14">
+            <parameters>V7 V9</parameters>
+        </constraint>
+        <constraint name="C38" arity="2" scope="V8 V9" reference="P14">
+            <parameters>V8 V9</parameters>
+        </constraint>
+        <constraint name="C39" arity="2" scope="V10 V11" reference="P14">
+            <parameters>V10 V11</parameters>
+        </constraint>
+        <constraint name="C40" arity="2" scope="V10 V12" reference="P14">
+            <parameters>V10 V12</parameters>
+        </constraint>
+        <constraint name="C41" arity="2" scope="V10 V13" reference="P14">
+            <parameters>V10 V13</parameters>
+        </constraint>
+        <constraint name="C42" arity="2" scope="V10 V14" reference="P14">
+            <parameters>V10 V14</parameters>
+        </constraint>
+        <constraint name="C43" arity="2" scope="V11 V12" reference="P14">
+            <parameters>V11 V12</parameters>
+        </constraint>
+        <constraint name="C44" arity="2" scope="V11 V13" reference="P14">
+            <parameters>V11 V13</parameters>
+        </constraint>
+        <constraint name="C45" arity="2" scope="V11 V14" reference="P14">
+            <parameters>V11 V14</parameters>
+        </constraint>
+        <constraint name="C46" arity="2" scope="V12 V13" reference="P14">
+            <parameters>V12 V13</parameters>
+        </constraint>
+        <constraint name="C47" arity="2" scope="V12 V14" reference="P14">
+            <parameters>V12 V14</parameters>
+        </constraint>
+        <constraint name="C48" arity="2" scope="V13 V14" reference="P14">
+            <parameters>V13 V14</parameters>
+        </constraint>
+        <constraint name="C49" arity="2" scope="V15 V16" reference="P14">
+            <parameters>V15 V16</parameters>
+        </constraint>
+        <constraint name="C50" arity="2" scope="V15 V17" reference="P14">
+            <parameters>V15 V17</parameters>
+        </constraint>
+        <constraint name="C51" arity="2" scope="V15 V18" reference="P14">
+            <parameters>V15 V18</parameters>
+        </constraint>
+        <constraint name="C52" arity="2" scope="V15 V19" reference="P14">
+            <parameters>V15 V19</parameters>
+        </constraint>
+        <constraint name="C53" arity="2" scope="V16 V17" reference="P14">
+            <parameters>V16 V17</parameters>
+        </constraint>
+        <constraint name="C54" arity="2" scope="V16 V18" reference="P14">
+            <parameters>V16 V18</parameters>
+        </constraint>
+        <constraint name="C55" arity="2" scope="V16 V19" reference="P14">
+            <parameters>V16 V19</parameters>
+        </constraint>
+        <constraint name="C56" arity="2" scope="V17 V18" reference="P14">
+            <parameters>V17 V18</parameters>
+        </constraint>
+        <constraint name="C57" arity="2" scope="V17 V19" reference="P14">
+            <parameters>V17 V19</parameters>
+        </constraint>
+        <constraint name="C58" arity="2" scope="V18 V19" reference="P14">
+            <parameters>V18 V19</parameters>
+        </constraint>
+        <constraint name="C59" arity="2" scope="V20 V21" reference="P14">
+            <parameters>V20 V21</parameters>
+        </constraint>
+        <constraint name="C60" arity="2" scope="V20 V22" reference="P14">
+            <parameters>V20 V22</parameters>
+        </constraint>
+        <constraint name="C61" arity="2" scope="V20 V23" reference="P14">
+            <parameters>V20 V23</parameters>
+        </constraint>
+        <constraint name="C62" arity="2" scope="V20 V24" reference="P14">
+            <parameters>V20 V24</parameters>
+        </constraint>
+        <constraint name="C63" arity="2" scope="V21 V22" reference="P14">
+            <parameters>V21 V22</parameters>
+        </constraint>
+        <constraint name="C64" arity="2" scope="V21 V23" reference="P14">
+            <parameters>V21 V23</parameters>
+        </constraint>
+        <constraint name="C65" arity="2" scope="V21 V24" reference="P14">
+            <parameters>V21 V24</parameters>
+        </constraint>
+        <constraint name="C66" arity="2" scope="V22 V23" reference="P14">
+            <parameters>V22 V23</parameters>
+        </constraint>
+        <constraint name="C67" arity="2" scope="V22 V24" reference="P14">
+            <parameters>V22 V24</parameters>
+        </constraint>
+        <constraint name="C68" arity="2" scope="V23 V24" reference="P14">
+            <parameters>V23 V24</parameters>
+        </constraint>
     </constraints>
 </instance>

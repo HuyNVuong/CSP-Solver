@@ -22,6 +22,8 @@ public class BackTracking {
         nv = 0;
         long bt = 0;
 
+        variables.forEach(BackTracking::enforceNodeConsistency);
+
         var D = variables.stream().map(v -> {
             var domain = v.getDomain();
             return new HashSet<>(domain.getCurrentDomain());
@@ -88,13 +90,23 @@ public class BackTracking {
                 break;
             }
             var isConsistent = previousVVPs.stream().allMatch(vvp -> {
-                var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
-                cc++;
-                if (constraint == null && vvp.v.hasUnaryConstraint) {
-                    return unaryConsistent(d, vvp.v.unaryConstraint);
-                }
+                if (vvp.v.shareManyConstraintsWithNeighbor(currentVariable.getName())) {
+                    var allConstraints = vvp.v.getAllConstraintForPairs(currentVariable.getName());
 
-                return binaryConsistent(vvp.value, d, constraint);
+                    return allConstraints.stream().allMatch(subConstraint -> {
+                        cc++;
+                        var isReversed = !subConstraint
+                                .getVariables().get(1).getName()
+                                .equals(currentVariable.getName());
+                        return binaryConsistent(vvp.value, d, subConstraint, isReversed);
+                    });
+                }
+                var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
+                if (constraint == null)
+                    return true;
+                cc++;
+                var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
+                return binaryConsistent(vvp.value, d, constraint, isReversed);
             });
             if (isConsistent) {
                 a = d;
@@ -105,26 +117,33 @@ public class BackTracking {
         return a;
     }
 
-    public static boolean unaryConsistent(int d, Constraint constraint) {
-        if (constraint.isIntension()) {
-            return constraint.intensionEvaluator.apply(new int[]{d}) == 0;
+    public static void enforceNodeConsistency(Variable v) {
+        if (v.hasUnaryConstraint) {
+            var constraint = v.unaryConstraint;
+            v.removeValues(v.getDomain().getCurrentDomain().stream().filter(val -> {
+                if (constraint.isIntension())
+                    return constraint.intensionEvaluator.apply(new int[]{val}) != 0;
+                return switch (constraint.definition) {
+                    case "conflicts" -> constraint.unaryConstraintValueLookup.contains(val);
+                    case "supports" -> !constraint.unaryConstraintValueLookup.contains(val);
+                    default -> false;
+                };
+            }).collect(Collectors.toSet()));
         }
-
-        return (constraint.unaryConstraintValueLookup.contains(d) && constraint.definition.equals("supports"))
-                || (!constraint.unaryConstraintValueLookup.contains(d) && constraint.definition.equals("conflicts"));
     }
 
-    public static boolean binaryConsistent(int di, int dj, Constraint constraint) {
-        if (constraint == null) {
-            return true;
-        }
+    public static boolean binaryConsistent(int di, int dj, Constraint constraint, boolean isReversed) {
         if (constraint.isIntension()) {
-            return constraint.intensionEvaluator.apply(new int[]{di, dj}) == 0;
+            var pair = isReversed ? new int[]{dj, di} : new int[]{di, dj};
+            return constraint.intensionEvaluator.apply(pair) == 0;
         }
 
-        return ((constraint.definition.equals("supports")
-                    && constraint.binaryConstraintValueLookup.contains(new BinaryPair(di, dj)))
-                || (constraint.definition.equals("conflicts")
-                    && !constraint.binaryConstraintValueLookup.contains(new BinaryPair(di, dj))));
+        var R = isReversed ? constraint.reversedBinaryConstraintValueLookup : constraint.binaryConstraintValueLookup;
+
+        return switch (constraint.definition) {
+            case "conflicts" -> !R.contains(new BinaryPair(di, dj));
+            case "supports" -> R.contains(new BinaryPair(di, dj));
+            default -> false;
+        };
     }
 }

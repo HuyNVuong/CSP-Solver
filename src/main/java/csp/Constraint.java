@@ -33,7 +33,7 @@ public class Constraint {
         variableKeys = null;
     }
 
-    public Constraint(PConstraint constraint) {
+    public  Constraint(PConstraint constraint) {
         constraintRef = constraint;
         name = constraint.getName();
         variableKeys = Arrays.stream(constraint.getScope())

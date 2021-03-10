@@ -14,10 +14,6 @@ public class Program {
 
 
     public static void main(String[] args) {
-        long x = 0;
-        for (int i = 0; i < 100000000; i++) {
-            x += i;
-        }
         if (args.length < 2) {
             solve17a();
 //            solve17c();
@@ -38,15 +34,20 @@ public class Program {
             acSolver.loadInstance(args[1]);
             acSolver.solve();
             acSolver.report();
-        } else if (args.length == 6) {
+        } else if (args.length == 8) {
             var btSolver = switch (args[5]) {
                 case "BT" -> new BtSolver(BackTracking::vanillaSearch);
                 default   ->  null;
             };
             assert btSolver != null;
             btSolver.loadInstance(args[1]);
-            btSolver.solve();
-            btSolver.report();
+            btSolver.solve(args[7]);
+            btSolver.solve(args[7]);
+            for (var t : new String[]{"LX", "LD", "DEG", "DD"}) {
+                btSolver.solve(t);
+                btSolver.report();
+            }
+
         }
     }
 
