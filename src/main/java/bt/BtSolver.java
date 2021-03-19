@@ -1,5 +1,6 @@
 package bt;
 
+import abscon.instance.tools.SolutionChecker;
 import bt.models.BtResponse;
 import csp.MyParser;
 import csp.Variable;
@@ -22,6 +23,8 @@ public class BtSolver {
     private String variableOrdering;
 
     private MyParser parser;
+    private SolutionChecker solutionChecker;
+    private String fileName;
 
     private final F3<List<Variable>, Boolean, BtResponse> btFunction;
 
@@ -38,6 +41,7 @@ public class BtSolver {
 
     public void loadInstance(String fileName) {
         parser = new MyParser(fileName);
+        this.fileName = fileName;
         parser.parse();
         for (var v : parser.getVariables()) {
             variableLookup.put(v.getName(), v);
@@ -53,6 +57,7 @@ public class BtSolver {
             case "LD" -> leastDomainOrderingHeuristic(keys);
             case "DEG" -> maximalDegreeOrderingHeuristic(keys);
             case "DD" -> minimalDomainOverDegreeOrderingHeuristic(keys);
+            case "MWO" -> minimalWidthOrderingHeuristic(keys);
             default -> keys;
         }).stream().map(variableLookup::get).collect(Collectors.toList());
 
@@ -122,13 +127,7 @@ public class BtSolver {
         var seen = new HashSet<String>();
         var ordered = new ArrayList<String>();
         do {
-            var degree = new TreeMap<Integer, List<String>>();
-            keys.forEach(k -> {
-                if (seen.contains(k))
-                    return;
-                degree.putIfAbsent(degreeCount.get(k), new ArrayList<>());
-                degree.get(degreeCount.get(k)).add(k);
-            });
+            var degree = buildOrderedDegreeMap(keys, degreeCount, seen);
 
             var maxDegree = degree.lastEntry().getValue().stream()
                     .sorted(Comparator.naturalOrder())
@@ -143,6 +142,41 @@ public class BtSolver {
         } while (seen.size() < keys.size());
 
         return ordered;
+    }
+
+    private List<String> minimalWidthOrderingHeuristic(List<String> keys) {
+        var degreeCount = keys.stream()
+                .collect(Collectors.toMap(k -> k, k -> variableLookup.get(k).getNeighbors().size()));
+
+        var seen = new HashSet<String>();
+        var ordered = new ArrayList<String>();
+        do {
+            var degree = buildOrderedDegreeMap(keys, degreeCount, seen);
+
+            var minWidth = degree.firstEntry().getValue().stream()
+                    .sorted(Comparator.naturalOrder())
+                    .collect(Collectors.toList());
+            for (var k : minWidth) {
+                variableLookup.get(k).getNeighbors().forEach(n -> {
+                    degreeCount.put(n.getName(), degreeCount.get(n.getName()) - 1);
+                });
+                seen.add(k);
+                ordered.add(0, k);
+            }
+        } while (seen.size() < keys.size());
+
+        return ordered;
+    }
+
+    private TreeMap<Integer, List<String>> buildOrderedDegreeMap(List<String> keys, Map<String, Integer> degreeCount, HashSet<String> seen) {
+        var degree = new TreeMap<Integer, List<String>>();
+        keys.forEach(k -> {
+            if (seen.contains(k))
+                return;
+            degree.putIfAbsent(degreeCount.get(k), new ArrayList<>());
+            degree.get(degreeCount.get(k)).add(k);
+        });
+        return degree;
     }
 
     private List<String> minimalDomainOverDegreeOrderingHeuristic(List<String> keys) {

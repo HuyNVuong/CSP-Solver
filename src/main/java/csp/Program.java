@@ -6,6 +6,7 @@ import ac.ArcConsistency_3;
 import ac.ArcConsistency_4;
 import bt.BackTracking;
 import bt.BtSolver;
+import bt.ConflictedBackJumping;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -34,19 +35,20 @@ public class Program {
             acSolver.loadInstance(args[1]);
             acSolver.solve();
             acSolver.report();
-        } else if (args.length == 8) {
-            var btSolver = switch (args[5]) {
+        } else if (args.length == 6) {
+            var btSolver = switch (args[3]) {
                 case "BT" -> new BtSolver(BackTracking::vanillaSearch);
+                case "BCJ" -> new BtSolver(ConflictedBackJumping::search);
                 default   ->  null;
             };
             assert btSolver != null;
             btSolver.loadInstance(args[1]);
-            btSolver.solve(args[7]);
-            btSolver.solve(args[7]);
-            for (var t : new String[]{"LX", "LD", "DEG", "DD"}) {
-                btSolver.solve(t);
-                btSolver.report();
-            }
+            btSolver.solve(args[5]);
+            btSolver.report();
+//            for (var t : new String[]{"LX", "LD", "DEG", "DD"}) {
+//                btSolver.solve(t);
+//                btSolver.report();
+//            }
 
         }
     }

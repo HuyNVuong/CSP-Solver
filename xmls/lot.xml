@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance>
+  <presentation name="LotDevelopment" maxConstraintArity="2" format="XCSP 2.0"/>
+  <domains nbDomains="1">
+    <domain name="D0" nbValues="8">1..8</domain>
+  </domains>
+  <variables nbVariables="5">
+    <variable name="RecreationArea" domain="D0"/>
+    <variable name="ApartmentComplex" domain="D0"/>
+    <variable name="SingleFamilyHouses" domain="D0"/>
+    <variable name="Cemetery" domain="D0"/>
+    <variable name="Dumpsite" domain="D0"/>
+  </variables>
+  <relations nbRelations="5">
+    <relation name="slopes" arity="1" nbTuples="4" semantics="conflicts">3 4 7 8</relation>
+    <relation name="highway" arity="1" nbTuples="2" semantics="conflicts">1 2</relation>
+    <relation name="nearLake" arity="1" nbTuples="3" semantics="supports">2 3 4</relation>
+    <relation name="notNearLake" arity="1" nbTuples="3" semantics="conflicts">2 3 4</relation>
+    <relation name="near" arity="2" nbTuples="8" semantics="supports">2 3|3 2|3 4|4 3|6 7|7 6|7 8|8 7</relation>
+    <relation name="construction" arity="2" nbTuples="16" semantics="conflicts">1 3|1 4|2 3|2 4|3 3|3 4|4 3|4 4|5 3|5 4|6 3|6 4|7 3|7 4|8 3|8 4</relation>
+    <relation name="notVisible" arity="2" nbTuples="18" semantics="conflicts">1 2|2 1|1 5|5 1|2 3|3 2|2 6|6 2|3 4|4 3|3 7|7 3|4 8|8 4|6 7|7 6|7 8|8 7</relation>
+  </relations>
+  <constraints>
+    <constraint name="steep" arity="1" scope="ApartmentComplex" reference="slopes"/>
+    <constraint name="steep" arity="1" scope="SingleFamilyHouses" reference="slopes"/>
+    <constraint name="steep" arity="1" scope="Cemetery" reference="slopes"/>
+    <constraint name="steep" arity="1" scope="Dumpsite" reference="slopes"/>
+    <constraint name="poorSoil" arity="1" scope="ApartmentComplex" reference="construction"/>
+    <constraint name="poorSoil" arity="1" scope="SingleFamilyHouses" reference="construction"/>
+    <constraint name="noisy" arity="1" scope="ApartmentComplex" reference="highway"/>
+    <constraint name="noisy" arity="1" scope="SingleFamilyHouses" reference="highway"/>
+    <constraint name="noisy" arity="1" scope="RecreationArea" reference="highway"/>
+    <constraint name="notNearLake" arity="1" scope="Dumpsite" reference="notLake"/>
+    <constraint name="nearLake" arity="1" scope="RecreationArea" reference="nearLake"/>
+    <constraint name="notVisible" arity="2" scope="RecreationArea Dumpsite" reference="notVisible"/>
+    <constraint name="notVisible" arity="2" scope="ApartmentComplex Dumpsite" reference="notVisible"/>
+    <constraint name="notVisible" arity="2" scope="SingleFamilyHouses Dumpsite" reference="notVisible"/>
+    <constraint name="notVisible" arity="2" scope="Cemetery Dumpsite" reference="notVisible"/>
+  </constraints>
+</instance>

@@ -1,15 +1,15 @@
 package abscon.instance.tools;
 
+import abscon.instance.InstanceTokens;
+import abscon.instance.components.PConstraint;
+import abscon.instance.components.PVariable;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import abscon.instance.InstanceTokens;
-import abscon.instance.components.PConstraint;
-import abscon.instance.components.PVariable;
 
 /**
  * @author christophe lecoutre
@@ -149,7 +149,7 @@ public class SolutionChecker {
 
 		System.out.println("solutionCost " + sum);
 		System.out.println("listOfUnsatisfiedConstraints " + list);
-		System.exit(0);
+//		System.exit(0);
 	}
 
 	public SolutionChecker(String instanceFileName) {

@@ -11,12 +11,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BackTracking {
+public class ConflictedBackJumping {
     static long cc;
     static long nv;
 
-    public static BtResponse vanillaSearch(List<Variable> variables, boolean solveAllSolutions) {
+    public static BtResponse search(List<Variable> variables, boolean solveAllSolutions) {
         int i = 0;
+        int n = variables.size();
         cc = 0;
         nv = 0;
         long bt = 0;
@@ -27,17 +28,21 @@ public class BackTracking {
             var domain = v.getDomain();
             return new HashSet<>(domain.getCurrentDomain());
         }).collect(Collectors.toList());
+        var J = variables.stream()
+                .map(v -> new HashSet<Integer>())
+                .collect(Collectors.toCollection(ArrayList::new));
         var paths = new ArrayList<ArrayList<Integer>>();
         paths.add(new ArrayList<>());
         int pathId = 0;
         var exploredVVPs = new ArrayList<VVP>();
-        while (0 <= i && (i < variables.size() || solveAllSolutions)) {
+
+        while(0 <= i && (i < n || solveAllSolutions)) {
             Integer xi;
             if (i == variables.size()) {
                 xi = null;
             } else {
                 var variableAtLevel = variables.get(i);
-                xi = selectValue(exploredVVPs, D.get(i), variableAtLevel);
+                xi = selectValue(exploredVVPs, D.get(i), variableAtLevel, J.get(i));
             }
             if (xi == null) {
                 bt++;
@@ -63,7 +68,7 @@ public class BackTracking {
         }
 
         if (i < 0 && !solveAllSolutions) {
-             return new BtResponse(new ArrayList<>(), cc, nv, bt);
+            return new BtResponse(new ArrayList<>(), cc, nv, bt);
         }
 
         var solutions = paths.stream()
@@ -75,9 +80,10 @@ public class BackTracking {
 
     private static Integer selectValue(
             List<VVP> previousVVPs, Set<Integer> currentDomain,
-            Variable currentVariable
+            Variable currentVariable, HashSet<Integer> Ji
     ) {
         var previousDomainValues = previousVVPs.stream().mapToInt(o -> o.value).boxed().collect(Collectors.toList());
+        var allConsistent = false;
         var valuesToRemoveFromDomain = new HashSet<Integer>();
         Integer a = null;
         var currentDomainsList = new ArrayList<>(currentDomain);
@@ -109,9 +115,13 @@ public class BackTracking {
             });
             if (isConsistent) {
                 a = d;
+                allConsistent = true;
                 break;
             }
         }
+        if (!allConsistent)
+            Ji.addAll(currentDomain);
+
         valuesToRemoveFromDomain.forEach(currentDomain::remove);
         return a;
     }
