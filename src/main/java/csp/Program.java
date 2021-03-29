@@ -38,17 +38,18 @@ public class Program {
         } else if (args.length == 6) {
             var btSolver = switch (args[3]) {
                 case "BT" -> new BtSolver(BackTracking::vanillaSearch);
-                case "BCJ" -> new BtSolver(ConflictedBackJumping::search);
+                case "CBJ" -> new BtSolver(ConflictedBackJumping::search);
                 default   ->  null;
             };
             assert btSolver != null;
             btSolver.loadInstance(args[1]);
+//            btSolver.solve(args[5]);
             btSolver.solve(args[5]);
             btSolver.report();
-//            for (var t : new String[]{"LX", "LD", "DEG", "DD"}) {
-//                btSolver.solve(t);
-//                btSolver.report();
-//            }
+            for (var t : new String[]{"LX", "LD", "DEG", "DD"}) {
+                btSolver.solve(t);
+                btSolver.report();
+            }
 
         }
     }

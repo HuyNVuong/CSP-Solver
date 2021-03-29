@@ -5,10 +5,7 @@ import bt.models.BtResponse;
 import csp.Variable;
 import nc.NodeConsistency;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConflictedBackJumping {
@@ -29,12 +26,11 @@ public class ConflictedBackJumping {
             return new HashSet<>(domain.getCurrentDomain());
         }).collect(Collectors.toList());
         var J = variables.stream()
-                .map(v -> new HashSet<Integer>())
+                .map(v -> new HashMap<Integer, Variable>())
                 .collect(Collectors.toCollection(ArrayList::new));
-        var paths = new ArrayList<ArrayList<Integer>>();
-        paths.add(new ArrayList<>());
-        int pathId = 0;
-        var exploredVVPs = new ArrayList<VVP>();
+        var solutions = new ArrayList<ArrayList<Integer>>();
+        List<VVP> exploredVVPs = new ArrayList<>();
+        boolean hasSolution = false;
 
         while(0 <= i && (i < n || solveAllSolutions)) {
             Integer xi;
@@ -42,27 +38,30 @@ public class ConflictedBackJumping {
                 xi = null;
             } else {
                 var variableAtLevel = variables.get(i);
-                xi = selectValue(exploredVVPs, D.get(i), variableAtLevel, J.get(i));
+                xi = selectValue(exploredVVPs, D.get(i), i,  variableAtLevel, J.get(i));
             }
             if (xi == null) {
                 bt++;
-                if (exploredVVPs.size() > 0) {
-                    int lastIndex = exploredVVPs.size() - 1;
-                    exploredVVPs.remove(lastIndex);
+                int iPrev = i;
+                var lastConflictVariable = J.get(i).get(J.get(i).size() - 1);
+                i = variables.indexOf(lastConflictVariable);
+                for (var pairs : J.get(iPrev).entrySet()) {
+                    J.get(i).putIfAbsent(pairs.getKey(), pairs.getValue());
                 }
+                J.get(i).remove(i);
 
-                if (paths.get(pathId).size() > 0) {
-                    paths.add(new ArrayList<>(paths.get(paths.size() - 1)));
-                    pathId++;
-                    paths.get(pathId).remove(paths.get(pathId).size() - 1);
+                if (exploredVVPs.size() > 0) {
+                    exploredVVPs = exploredVVPs.subList(0, i);
                 }
-                i--;
             } else {
                 i++;
-                paths.get(pathId).add(xi);
                 exploredVVPs.add(new VVP(variables.get(i - 1), xi));
                 if (i < variables.size()) {
                     D.set(i, new HashSet<>(variables.get(i).getDomain().getCurrentDomain()));
+                    J.set(i, new HashMap<>());
+                }
+                if (i == n) {
+                    solutions.add(new ArrayList<>(exploredVVPs.stream().map(vvp -> vvp.value).collect(Collectors.toList())));
                 }
             }
         }
@@ -71,58 +70,58 @@ public class ConflictedBackJumping {
             return new BtResponse(new ArrayList<>(), cc, nv, bt);
         }
 
-        var solutions = paths.stream()
-                .filter(p -> p.size() == variables.size())
-                .collect(Collectors.toList());
-
         return new BtResponse(solutions, cc, nv, bt);
     }
 
     private static Integer selectValue(
-            List<VVP> previousVVPs, Set<Integer> currentDomain,
-            Variable currentVariable, HashSet<Integer> Ji
+            List<VVP> previousVVPs, HashSet<Integer> currentDomain,
+            int currentIndex, Variable currentVariable, HashMap<Integer, Variable> Ji
     ) {
-        var previousDomainValues = previousVVPs.stream().mapToInt(o -> o.value).boxed().collect(Collectors.toList());
-        var allConsistent = false;
-        var valuesToRemoveFromDomain = new HashSet<Integer>();
         Integer a = null;
-        var currentDomainsList = new ArrayList<>(currentDomain);
-        for (int d : currentDomainsList) {
+        var allConsistent = true;
+        var valuesToRemoveFromDomain = new HashSet<Integer>();
+        for (var d : currentDomain) {
             nv++;
+            int k = 0;
+            boolean hasConsistent = true;
             valuesToRemoveFromDomain.add(d);
-            if (previousDomainValues.isEmpty()) {
-                a = d;
-                break;
-            }
-            var isConsistent = previousVVPs.stream().allMatch(vvp -> {
+            while (k < previousVVPs.size() && hasConsistent) {
+                var vvp = previousVVPs.get(k);
+                cc++;
+
                 if (vvp.v.shareManyConstraintsWithNeighbor(currentVariable.getName())) {
                     var allConstraints = vvp.v.getAllConstraintForPairs(currentVariable.getName());
 
-                    return allConstraints.stream().allMatch(subConstraint -> {
-                        cc++;
+                    hasConsistent = allConstraints.stream().allMatch(subConstraint -> {
                         var isReversed = !subConstraint
                                 .getVariables().get(1).getName()
                                 .equals(currentVariable.getName());
                         return Helper.binaryConsistent(vvp.value, d, subConstraint, isReversed);
                     });
                 }
+
                 var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
                 if (constraint == null)
-                    return true;
-                cc++;
+                    break;
                 var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
-                return Helper.binaryConsistent(vvp.value, d, constraint, isReversed);
-            });
-            if (isConsistent) {
+                hasConsistent = Helper.binaryConsistent(vvp.value, d, constraint, isReversed);
+
+                if (hasConsistent) {
+                    k++;
+                } else {
+                    Ji.putIfAbsent(k, vvp.v);
+                }
+            }
+            allConsistent = hasConsistent;
+
+            if (allConsistent) {
                 a = d;
-                allConsistent = true;
                 break;
             }
         }
-        if (!allConsistent)
-            Ji.addAll(currentDomain);
 
         valuesToRemoveFromDomain.forEach(currentDomain::remove);
+
         return a;
     }
 }

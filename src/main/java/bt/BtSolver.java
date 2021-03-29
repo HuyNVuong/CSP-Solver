@@ -61,9 +61,6 @@ public class BtSolver {
             default -> keys;
         }).stream().map(variableLookup::get).collect(Collectors.toList());
 
-//        var acSolver = new AcSolver(ArcConsistency_1::solve);
-//        acSolver.parser = parser;
-//        acSolver.solve();
         System.out.println(orderedVariables.stream().map(Variable::getName).collect(Collectors.joining(",")));
 
         var startTime = System.nanoTime();
@@ -77,15 +74,14 @@ public class BtSolver {
                 ? new int[0]
                 : oneSolutionBtResponse.paths.get(0).stream().mapToInt(i -> i).toArray();
 
-
-        var allSolStartTime = System.nanoTime();
-        var allSolutionsBtResponse = btFunction.apply(orderedVariables, true);
-        var allSolEndTime = System.nanoTime() - allSolStartTime;
-        allSolsCpuTime = allSolEndTime / 1000000.0;
-        allSolsCc = allSolutionsBtResponse.cc;
-        allSolsNv = allSolutionsBtResponse.nv;
-        allSolsBt = allSolutionsBtResponse.bt;
-        numberOfSolutions = allSolutionsBtResponse.paths.size();
+//        var allSolStartTime = System.nanoTime();
+//        var allSolutionsBtResponse = btFunction.apply(orderedVariables, true);
+//        var allSolEndTime = System.nanoTime() - allSolStartTime;
+//        allSolsCpuTime = allSolEndTime / 1000000.0;
+//        allSolsCc = allSolutionsBtResponse.cc;
+//        allSolsNv = allSolutionsBtResponse.nv;
+//        allSolsBt = allSolutionsBtResponse.bt;
+//        numberOfSolutions = allSolutionsBtResponse.paths.size();
     }
 
     public void report() {
