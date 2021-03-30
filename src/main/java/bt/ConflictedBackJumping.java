@@ -26,7 +26,7 @@ public class ConflictedBackJumping {
             return new HashSet<>(domain.getCurrentDomain());
         }).collect(Collectors.toList());
         var J = variables.stream()
-                .map(v -> new TreeMap<Integer, Variable>())
+                .map(v -> new HashSet<Integer>())
                 .collect(Collectors.toCollection(ArrayList::new));
         var solutions = new ArrayList<ArrayList<Integer>>();
         List<VVP> exploredVVPs = new ArrayList<>();
@@ -49,15 +49,12 @@ public class ConflictedBackJumping {
                     cbf[i] = false;
                     i--;
                 } else {
-                    var lastConflictEntry = J.get(i).lastEntry();
-                    if (lastConflictEntry == null)
-                        break;
-                    i = lastConflictEntry.getKey();
+                    i = Collections.max(J.get(i));
                 }
                 if (i == -1)
                     break;
-                for (var pairs : J.get(iPrev).entrySet()) {
-                    J.get(i).putIfAbsent(pairs.getKey(), pairs.getValue());
+                for (var k : J.get(iPrev)) {
+                    J.get(i).add(k);
                 }
 
                 J.get(i).remove(i);
@@ -70,10 +67,11 @@ public class ConflictedBackJumping {
                 exploredVVPs.add(new VVP(variables.get(i - 1), xi));
                 if (i < variables.size()) {
                     D.set(i, new HashSet<>(variables.get(i).getDomain().getCurrentDomain()));
-                    J.set(i, new TreeMap<>());
+                    J.set(i, new HashSet<>());
                 }
                 if (i == n) {
                     Arrays.fill(cbf, true);
+//                    System.out.printf("Solution %d\n", solutions.size());
                     solutions.add(new ArrayList<>(exploredVVPs.stream().map(vvp -> vvp.value).collect(Collectors.toList())));
                 }
             }
@@ -88,7 +86,7 @@ public class ConflictedBackJumping {
 
     private static Integer selectValue(
             List<VVP> previousVVPs, HashSet<Integer> currentDomain,
-            int currentIndex, Variable currentVariable, TreeMap<Integer, Variable> Ji
+            int currentIndex, Variable currentVariable, HashSet<Integer> Ji
     ) {
         Integer a = null;
         var allConsistent = true;
@@ -122,7 +120,7 @@ public class ConflictedBackJumping {
                 if (hasConsistent) {
                     k++;
                 } else {
-                    Ji.putIfAbsent(k, vvp.v);
+                    Ji.add(k);
                 }
             }
             allConsistent = hasConsistent;
