@@ -26,15 +26,17 @@ public class ConflictedBackJumping {
             return new HashSet<>(domain.getCurrentDomain());
         }).collect(Collectors.toList());
         var J = variables.stream()
-                .map(v -> new HashMap<Integer, Variable>())
+                .map(v -> new TreeMap<Integer, Variable>())
                 .collect(Collectors.toCollection(ArrayList::new));
         var solutions = new ArrayList<ArrayList<Integer>>();
         List<VVP> exploredVVPs = new ArrayList<>();
         boolean hasSolution = false;
+        var cbf = new boolean[n];
 
         while(0 <= i && (i < n || solveAllSolutions)) {
             Integer xi;
             if (i == variables.size()) {
+                i--;
                 xi = null;
             } else {
                 var variableAtLevel = variables.get(i);
@@ -43,11 +45,21 @@ public class ConflictedBackJumping {
             if (xi == null) {
                 bt++;
                 int iPrev = i;
-                var lastConflictVariable = J.get(i).get(J.get(i).size() - 1);
-                i = variables.indexOf(lastConflictVariable);
+                if (cbf[i]) {
+                    cbf[i] = false;
+                    i--;
+                } else {
+                    var lastConflictEntry = J.get(i).lastEntry();
+                    if (lastConflictEntry == null)
+                        break;
+                    i = lastConflictEntry.getKey();
+                }
+                if (i == -1)
+                    break;
                 for (var pairs : J.get(iPrev).entrySet()) {
                     J.get(i).putIfAbsent(pairs.getKey(), pairs.getValue());
                 }
+
                 J.get(i).remove(i);
 
                 if (exploredVVPs.size() > 0) {
@@ -58,9 +70,10 @@ public class ConflictedBackJumping {
                 exploredVVPs.add(new VVP(variables.get(i - 1), xi));
                 if (i < variables.size()) {
                     D.set(i, new HashSet<>(variables.get(i).getDomain().getCurrentDomain()));
-                    J.set(i, new HashMap<>());
+                    J.set(i, new TreeMap<>());
                 }
                 if (i == n) {
+                    Arrays.fill(cbf, true);
                     solutions.add(new ArrayList<>(exploredVVPs.stream().map(vvp -> vvp.value).collect(Collectors.toList())));
                 }
             }
@@ -75,7 +88,7 @@ public class ConflictedBackJumping {
 
     private static Integer selectValue(
             List<VVP> previousVVPs, HashSet<Integer> currentDomain,
-            int currentIndex, Variable currentVariable, HashMap<Integer, Variable> Ji
+            int currentIndex, Variable currentVariable, TreeMap<Integer, Variable> Ji
     ) {
         Integer a = null;
         var allConsistent = true;
@@ -98,13 +111,13 @@ public class ConflictedBackJumping {
                                 .equals(currentVariable.getName());
                         return Helper.binaryConsistent(vvp.value, d, subConstraint, isReversed);
                     });
+                } else {
+                    var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
+                    if (constraint == null)
+                        break;
+                    var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
+                    hasConsistent = Helper.binaryConsistent(vvp.value, d, constraint, isReversed);
                 }
-
-                var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
-                if (constraint == null)
-                    break;
-                var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
-                hasConsistent = Helper.binaryConsistent(vvp.value, d, constraint, isReversed);
 
                 if (hasConsistent) {
                     k++;

@@ -61,7 +61,7 @@ public class Variable {
 
     public boolean shareManyConstraintsWithNeighbor(String neighborKey) {
         if (variablesShareManyConstraints.containsKey(neighborKey)) {
-            return variablesShareManyConstraints.get(neighborKey).size() > 0;
+            return variablesShareManyConstraints.get(neighborKey).size() > 1;
         }
 
         return false;
