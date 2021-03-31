@@ -96,6 +96,10 @@ public class ConflictedBackJumping {
             int k = 0;
             boolean hasConsistent = true;
             valuesToRemoveFromDomain.add(d);
+            if (previousVVPs.isEmpty()) {
+                a = d;
+                break;
+            }
             while (k < previousVVPs.size() && hasConsistent) {
                 var vvp = previousVVPs.get(k);
                 cc++;
@@ -111,8 +115,10 @@ public class ConflictedBackJumping {
                     });
                 } else {
                     var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
-                    if (constraint == null)
-                        break;
+                    if (constraint == null) {
+                        k++;
+                        continue;
+                    }
                     var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
                     hasConsistent = Helper.binaryConsistent(vvp.value, d, constraint, isReversed);
                 }
