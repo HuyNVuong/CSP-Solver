@@ -45,7 +45,7 @@ public class ConflictedBackJumping {
             if (xi == null) {
                 bt++;
                 int iPrev = i;
-                if (cbf[i]) {
+                if (cbf[i] || J.get(i).size() == 0) {
                     cbf[i] = false;
                     i--;
                 } else {

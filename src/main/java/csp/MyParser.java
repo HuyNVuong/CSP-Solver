@@ -42,7 +42,7 @@ public class MyParser {
             for (PVariable variable : con.getScope()) {
                 variablesLookup.get(variable.getName()).addConstraint(constraint);
                 if (constraint.arity == 1) {
-                    variablesLookup.get(variable.getName()).unaryConstraint = constraint;
+                    variablesLookup.get(variable.getName()).unaryConstraints.add(constraint);
                     variablesLookup.get(variable.getName()).hasUnaryConstraint = true;
                 }
             }

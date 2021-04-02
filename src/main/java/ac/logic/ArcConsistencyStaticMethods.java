@@ -4,11 +4,11 @@ import ac.models.ReviseResponse;
 import csp.BinaryPair;
 import csp.Constraint;
 import csp.Variable;
+import nc.NodeConsistency;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ArcConsistencyStaticMethods {
     static int cc;
@@ -18,16 +18,9 @@ public class ArcConsistencyStaticMethods {
         cc = 0;
         Set<Integer> valuesToRemove;
         if (xj == null) {
-            valuesToRemove = xi.getDomain().getCurrentDomain().stream().filter(val -> {
-                if (constraint.isIntension())
-                    return constraint.intensionEvaluator.apply(new int[]{val}) != 0;
-                return switch (constraint.definition) {
-                    case "conflicts" -> constraint.unaryConstraintValueLookup.contains(val);
-                    case "supports" -> !constraint.unaryConstraintValueLookup.contains(val);
-                    default -> false;
-                };
-            }).collect(Collectors.toSet());
-            domainModified = valuesToRemove.size() > 0;
+            NodeConsistency.enforceNodeConsistency(xi);
+            valuesToRemove = new HashSet<>();
+            domainModified = true;
         } else {
             valuesToRemove = new HashSet<>();
             for (var ai : xi.getDomain().getCurrentDomain()) {

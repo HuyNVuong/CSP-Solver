@@ -17,24 +17,35 @@
     <relation name="nearLake" arity="1" nbTuples="3" semantics="supports">2 3 4</relation>
     <relation name="notNearLake" arity="1" nbTuples="3" semantics="conflicts">2 3 4</relation>
     <relation name="near" arity="2" nbTuples="8" semantics="supports">2 3|3 2|3 4|4 3|6 7|7 6|7 8|8 7</relation>
-    <relation name="construction" arity="2" nbTuples="16" semantics="conflicts">1 3|1 4|2 3|2 4|3 3|3 4|4 3|4 4|5 3|5 4|6 3|6 4|7 3|7 4|8 3|8 4</relation>
-    <relation name="notVisible" arity="2" nbTuples="18" semantics="conflicts">1 2|2 1|1 5|5 1|2 3|3 2|2 6|6 2|3 4|4 3|3 7|7 3|4 8|8 4|6 7|7 6|7 8|8 7</relation>
+    <relation name="poorSoil" arity="1" nbTuples="2" semantics="conflicts">3 4</relation>
+    <relation name="notVisible" arity="2" nbTuples="8" semantics="conflicts">2 3|3 2|3 4|4 3|6 7|7 6|7 8|8 7</relation>
+    <relation name="mutex" arity="2" nbTuples="8" semantics="conflicts">1 1|2 2|3 3|4 4|5 5|6 6|7 7|8 8</relation>
   </relations>
-  <constraints>
-    <constraint name="steep" arity="1" scope="ApartmentComplex" reference="slopes"/>
-    <constraint name="steep" arity="1" scope="SingleFamilyHouses" reference="slopes"/>
-    <constraint name="steep" arity="1" scope="Cemetery" reference="slopes"/>
-    <constraint name="steep" arity="1" scope="Dumpsite" reference="slopes"/>
-    <constraint name="poorSoil" arity="1" scope="ApartmentComplex" reference="construction"/>
-    <constraint name="poorSoil" arity="1" scope="SingleFamilyHouses" reference="construction"/>
-    <constraint name="noisy" arity="1" scope="ApartmentComplex" reference="highway"/>
-    <constraint name="noisy" arity="1" scope="SingleFamilyHouses" reference="highway"/>
-    <constraint name="noisy" arity="1" scope="RecreationArea" reference="highway"/>
-    <constraint name="notNearLake" arity="1" scope="Dumpsite" reference="notLake"/>
-    <constraint name="nearLake" arity="1" scope="RecreationArea" reference="nearLake"/>
-    <constraint name="notVisible" arity="2" scope="RecreationArea Dumpsite" reference="notVisible"/>
-    <constraint name="notVisible" arity="2" scope="ApartmentComplex Dumpsite" reference="notVisible"/>
-    <constraint name="notVisible" arity="2" scope="SingleFamilyHouses Dumpsite" reference="notVisible"/>
-    <constraint name="notVisible" arity="2" scope="Cemetery Dumpsite" reference="notVisible"/>
+  <constraints nbConstraints="15">
+    <constraint name="C1" arity="1" scope="ApartmentComplex" reference="slopes"/>
+    <constraint name="C2" arity="1" scope="SingleFamilyHouses" reference="slopes"/>
+    <constraint name="C3" arity="1" scope="Cemetery" reference="slopes"/>
+    <constraint name="C4" arity="1" scope="Dumpsite" reference="slopes"/>
+    <constraint name="C5" arity="1" scope="ApartmentComplex" reference="poorSoil"> </constraint>
+    <constraint name="C6" arity="1" scope="SingleFamilyHouses" reference="poorSoil"> </constraint>
+    <constraint name="C7" arity="1" scope="ApartmentComplex" reference="highway"> </constraint>
+    <constraint name="C8" arity="1" scope="SingleFamilyHouses" reference="highway"> </constraint>
+    <constraint name="C9" arity="1" scope="RecreationArea" reference="highway"> </constraint>
+    <constraint name="C10" arity="1" scope="Dumpsite" reference="notNearLake"> </constraint>
+    <constraint name="C11" arity="1" scope="RecreationArea" reference="nearLake"> </constraint>
+    <constraint name="C12" arity="2" scope="RecreationArea Dumpsite" reference="notVisible"> </constraint>
+    <constraint name="C13" arity="2" scope="ApartmentComplex Dumpsite" reference="notVisible"> </constraint>
+    <constraint name="C14" arity="2" scope="SingleFamilyHouses Dumpsite" reference="notVisible"> </constraint>
+    <constraint name="C15" arity="2" scope="Cemetery Dumpsite" reference="notVisible"> </constraint>
+    <constraint name="C16" arity="2" scope="RecreationArea Dumpsite" reference="mutex"/>
+    <constraint name="C17" arity="2" scope="RecreationArea Cemetery" reference="mutex"/>
+    <constraint name="C18" arity="2" scope="RecreationArea SingleFamilyHouses" reference="mutex"/>
+    <constraint name="C19" arity="2" scope="RecreationArea ApartmentComplex" reference="mutex"/>
+    <constraint name="C20" arity="2" scope="ApartmentComplex Cemetery" reference="mutex"/>
+    <constraint name="C21" arity="2" scope="ApartmentComplex SingleFamilyHouses" reference="mutex"/>
+    <constraint name="C22" arity="2" scope="ApartmentComplex Dumpsite" reference="mutex"/>
+    <constraint name="C23" arity="2" scope="SingleFamilyHouses Dumpsite" reference="mutex"/>
+    <constraint name="C24" arity="2" scope="SingleFamilyHouses Cemetery" reference="mutex"/>
+    <constraint name="C25" arity="2" scope="Dumpsite Cemetery" reference="mutex"/>
   </constraints>
 </instance>

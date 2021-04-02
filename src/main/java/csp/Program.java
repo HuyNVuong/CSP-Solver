@@ -46,10 +46,10 @@ public class Program {
 //            btSolver.solve(args[5]);
             btSolver.solve(args[5]);
             btSolver.report();
-            for (var t : new String[]{"LX", "LD", "DEG", "DD", "MWO"}) {
-                btSolver.solve(t);
-                btSolver.report();
-            }
+//            for (var t : new String[]{"LX", "LD", "DEG", "DD", "MWO"}) {
+//                btSolver.solve(t);
+//                btSolver.report();
+//            }
 
         }
     }

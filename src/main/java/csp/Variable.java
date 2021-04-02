@@ -16,7 +16,7 @@ public class Variable {
     protected final Map<String, ArrayList<Constraint>> variablesShareManyConstraints;
 
     public boolean hasUnaryConstraint;
-    public Constraint unaryConstraint;
+    public List<Constraint> unaryConstraints;
 
     public Variable(PVariable var) {
         name = var.getName();
@@ -25,6 +25,7 @@ public class Variable {
         constraints = new HashMap<>();
         constraintOfNeighbors = new HashMap<>();
         variablesShareManyConstraints = new HashMap<>();
+        unaryConstraints = new ArrayList<>();
     }
 
     public Domain getDomain() { return domain; }
