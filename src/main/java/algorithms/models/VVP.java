@@ -1,4 +1,4 @@
-package ac.models;
+package algorithms.models;
 
 
 import csp.Variable;

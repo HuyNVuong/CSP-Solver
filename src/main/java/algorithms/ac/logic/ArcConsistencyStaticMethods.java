@@ -1,6 +1,6 @@
-package ac.logic;
+package algorithms.ac.logic;
 
-import ac.models.ReviseResponse;
+import algorithms.models.ReviseResponse;
 import csp.BinaryPair;
 import csp.Constraint;
 import csp.Variable;

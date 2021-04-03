@@ -1,7 +1,7 @@
-package ac;
+package algorithms.ac;
 
-import ac.logic.ArcConsistencyStaticMethods;
-import ac.models.AcResponse;
+import algorithms.ac.logic.ArcConsistencyStaticMethods;
+import algorithms.models.AcResponse;
 import csp.Constraint;
 
 import java.util.List;

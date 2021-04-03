@@ -1,7 +1,7 @@
-package bt;
+package algorithms.search;
 
-import ac.models.VVP;
-import bt.models.BtResponse;
+import algorithms.models.VVP;
+import algorithms.models.SearchResponse;
 import csp.Variable;
 import nc.NodeConsistency;
 
@@ -12,7 +12,7 @@ public class ConflictedBackJumping {
     static long cc;
     static long nv;
 
-    public static BtResponse search(List<Variable> variables, boolean solveAllSolutions) {
+    public static SearchResponse search(List<Variable> variables, boolean solveAllSolutions) {
         int i = 0;
         int n = variables.size();
         cc = 0;
@@ -78,10 +78,10 @@ public class ConflictedBackJumping {
         }
 
         if (i < 0 && !solveAllSolutions) {
-            return new BtResponse(new ArrayList<>(), cc, nv, bt);
+            return new SearchResponse(new ArrayList<>(), cc, nv, bt);
         }
 
-        return new BtResponse(solutions, cc, nv, bt);
+        return new SearchResponse(solutions, cc, nv, bt);
     }
 
     private static Integer selectValue(

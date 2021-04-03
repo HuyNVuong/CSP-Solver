@@ -1,8 +1,8 @@
-package ac;
+package algorithms.ac;
 
-import ac.logic.ArcConsistencyStaticMethods;
-import ac.models.AcResponse;
-import ac.models.QueueTuple;
+import algorithms.ac.logic.ArcConsistencyStaticMethods;
+import algorithms.models.AcResponse;
+import algorithms.models.QueueTuple;
 import csp.Constraint;
 
 import java.util.LinkedList;

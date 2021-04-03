@@ -1,7 +1,7 @@
-package bt;
+package algorithms.search;
 
-import ac.models.VVP;
-import bt.models.BtResponse;
+import algorithms.models.VVP;
+import algorithms.models.SearchResponse;
 import csp.Variable;
 import nc.NodeConsistency;
 
@@ -15,7 +15,7 @@ public class BackTracking {
     static long cc;
     static long nv;
 
-    public static BtResponse vanillaSearch(List<Variable> variables, boolean solveAllSolutions) {
+    public static SearchResponse search(List<Variable> variables, boolean solveAllSolutions) {
         int i = 0;
         cc = 0;
         nv = 0;
@@ -63,14 +63,14 @@ public class BackTracking {
         }
 
         if (i < 0 && !solveAllSolutions) {
-             return new BtResponse(new ArrayList<>(), cc, nv, bt);
+             return new SearchResponse(new ArrayList<>(), cc, nv, bt);
         }
 
         var solutions = paths.stream()
                 .filter(p -> p.size() == variables.size())
                 .collect(Collectors.toList());
 
-        return new BtResponse(solutions, cc, nv, bt);
+        return new SearchResponse(solutions, cc, nv, bt);
     }
 
     private static Integer selectValue(

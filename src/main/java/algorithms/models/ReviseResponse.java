@@ -1,4 +1,4 @@
-package ac.models;
+package algorithms.models;
 
 public class ReviseResponse {
     public int cc;

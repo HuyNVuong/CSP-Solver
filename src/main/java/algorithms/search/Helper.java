@@ -1,4 +1,4 @@
-package bt;
+package algorithms.search;
 
 import csp.BinaryPair;
 import csp.Constraint;

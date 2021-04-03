@@ -1,8 +1,8 @@
-package ac;
+package algorithms.ac;
 
-import ac.models.AcResponse;
-import ac.models.VVP;
-import ac.models.VVPV;
+import algorithms.models.AcResponse;
+import algorithms.models.VVP;
+import algorithms.models.VVPV;
 import csp.BinaryPair;
 import csp.Constraint;
 import csp.Variable;

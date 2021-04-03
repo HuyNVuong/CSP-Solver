@@ -1,12 +1,13 @@
 package csp;
 
-import ac.AcSolver;
-import ac.ArcConsistency_1;
-import ac.ArcConsistency_3;
-import ac.ArcConsistency_4;
-import bt.BackTracking;
-import bt.BtSolver;
-import bt.ConflictedBackJumping;
+import algorithms.ac.AcSolver;
+import algorithms.ac.ArcConsistency_1;
+import algorithms.ac.ArcConsistency_3;
+import algorithms.ac.ArcConsistency_4;
+import algorithms.search.BackTracking;
+import algorithms.search.ForwardChecking;
+import algorithms.search.SearchSolver;
+import algorithms.search.ConflictedBackJumping;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -37,8 +38,9 @@ public class Program {
             acSolver.report();
         } else if (args.length == 6) {
             var btSolver = switch (args[3]) {
-                case "BT" -> new BtSolver(BackTracking::vanillaSearch);
-                case "CBJ" -> new BtSolver(ConflictedBackJumping::search);
+                case "BT" -> new SearchSolver(BackTracking::search);
+                case "CBJ" -> new SearchSolver(ConflictedBackJumping::search);
+                case "FC" -> new SearchSolver(ForwardChecking::search);
                 default   ->  null;
             };
             assert btSolver != null;

@@ -1,19 +1,19 @@
-package bt.models;
+package algorithms.models;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BtResponse {
+public class SearchResponse {
     public List<ArrayList<Integer>> paths;
     public long cc;
     public long nv;
     public long bt;
 
-    public BtResponse() {
+    public SearchResponse() {
         paths = new ArrayList<>();
     }
 
-    public BtResponse(List<ArrayList<Integer>> paths, long cc, long nv, long bt) {
+    public SearchResponse(List<ArrayList<Integer>> paths, long cc, long nv, long bt) {
         this.paths = paths;
         this.cc = cc;
         this.nv = nv;

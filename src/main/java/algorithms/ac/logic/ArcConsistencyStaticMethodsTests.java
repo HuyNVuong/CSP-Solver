@@ -1,4 +1,4 @@
-package ac.logic;
+package algorithms.ac.logic;
 
 import abscon.instance.components.*;
 import csp.Constraint;

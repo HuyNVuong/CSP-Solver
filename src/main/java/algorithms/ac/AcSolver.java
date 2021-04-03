@@ -1,6 +1,6 @@
-package ac;
+package algorithms.ac;
 
-import ac.models.AcResponse;
+import algorithms.models.AcResponse;
 import csp.Constraint;
 import csp.MyParser;
 import csp.Variable;

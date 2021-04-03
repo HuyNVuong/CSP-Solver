@@ -1,7 +1,7 @@
-package bt;
+package algorithms.search;
 
 import abscon.instance.tools.SolutionChecker;
-import bt.models.BtResponse;
+import algorithms.models.SearchResponse;
 import csp.MyParser;
 import csp.Variable;
 import interfaces.F3;
@@ -9,7 +9,7 @@ import interfaces.F3;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BtSolver {
+public class SearchSolver {
     private long cc;
     private long nv;
     private long bt;
@@ -26,14 +26,14 @@ public class BtSolver {
     private SolutionChecker solutionChecker;
     private String fileName;
 
-    private final F3<List<Variable>, Boolean, BtResponse> btFunction;
+    private final F3<List<Variable>, Boolean, SearchResponse> searchFunction;
 
     private int[] firstSolution;
     private Map<String, Variable> variableLookup;
 
 
-    public BtSolver(F3<List<Variable>, Boolean, BtResponse> solverFunction) {
-        btFunction = solverFunction;
+    public SearchSolver(F3<List<Variable>, Boolean, SearchResponse> solverFunction) {
+        searchFunction = solverFunction;
         variableLookup = new HashMap<>();
         cpuTime = 0;
         allSolsCpuTime = 0;
@@ -64,7 +64,7 @@ public class BtSolver {
         System.out.println(orderedVariables.stream().map(Variable::getName).collect(Collectors.joining(",")));
 
         var startTime = System.nanoTime();
-        var oneSolutionBtResponse = btFunction.apply(orderedVariables, false);
+        var oneSolutionBtResponse = searchFunction.apply(orderedVariables, false);
         var time = System.nanoTime() - startTime;
         cpuTime = time / 1000000.0;
         cc = oneSolutionBtResponse.cc;
@@ -75,7 +75,7 @@ public class BtSolver {
                 : oneSolutionBtResponse.paths.get(0).stream().mapToInt(i -> i).toArray();
 
         var allSolStartTime = System.nanoTime();
-        var allSolutionsBtResponse = btFunction.apply(orderedVariables, true);
+        var allSolutionsBtResponse = searchFunction.apply(orderedVariables, true);
         var allSolEndTime = System.nanoTime() - allSolStartTime;
         allSolsCpuTime = allSolEndTime / 1000000.0;
         allSolsCc = allSolutionsBtResponse.cc;
