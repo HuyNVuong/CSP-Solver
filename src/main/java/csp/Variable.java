@@ -42,6 +42,8 @@ public class Variable {
         values.forEach(domain::removeValue);
     }
 
+    public void resetCurrentDomain() { domain.setCurrentDomain(domain.getInitialDomain()); }
+
     public List<Variable> getNeighbors() {
         for (var con : constraints.values()) {
             for (var neighbor : con.getVariables()) {

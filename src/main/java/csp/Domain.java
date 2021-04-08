@@ -3,6 +3,7 @@ package csp;
 import abscon.instance.components.PDomain;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,17 +12,19 @@ public class Domain {
 
     private Set<Integer> initialDomain;
 
-    private Set<Integer> currentDomain;
+    private HashSet<Integer> currentDomain;
 
     public Domain(PDomain domainRef) {
         this.domainRef = domainRef;
         this.initialDomain = Arrays.stream(domainRef.getValues()).boxed().collect(Collectors.toSet());
-        this.currentDomain = Arrays.stream(domainRef.getValues()).boxed().collect(Collectors.toSet());
+        this.currentDomain = Arrays.stream(domainRef.getValues()).boxed().collect(Collectors.toCollection(HashSet::new));
     }
 
     public Set<Integer> getInitialDomain() { return initialDomain; }
 
-    public Set<Integer> getCurrentDomain() {
+    public void setCurrentDomain(Set<Integer> values) { currentDomain = new HashSet<>(values); }
+
+    public HashSet<Integer> getCurrentDomain() {
         return currentDomain;
     }
 

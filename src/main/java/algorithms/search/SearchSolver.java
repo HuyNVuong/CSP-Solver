@@ -29,12 +29,13 @@ public class SearchSolver {
     private final F3<List<Variable>, Boolean, SearchResponse> searchFunction;
 
     private int[] firstSolution;
-    private Map<String, Variable> variableLookup;
+    private List<String> searchedVariables;
+    private List<Variable> variables;
 
 
     public SearchSolver(F3<List<Variable>, Boolean, SearchResponse> solverFunction) {
         searchFunction = solverFunction;
-        variableLookup = new HashMap<>();
+        variables = new ArrayList<>();
         cpuTime = 0;
         allSolsCpuTime = 0;
     }
@@ -43,21 +44,21 @@ public class SearchSolver {
         parser = new MyParser(fileName);
         this.fileName = fileName;
         parser.parse();
-        for (var v : parser.getVariables()) {
-            variableLookup.put(v.getName(), v);
-        }
+        variables = parser.getVariables();
         parser.verbose();
     }
 
     public void solve(String order) {
         variableOrdering = order;
-        var keys = new ArrayList<>(variableLookup.keySet());
+        var keys = variables.stream().map(Variable::getName).collect(Collectors.toList());
+        var staticOrdering = new StaticOrdering(variables);
+        var variableLookup = variables.stream().collect(Collectors.toMap(Variable::getName, v -> v));
         var orderedVariables = (switch (order) {
             case "LX" -> keys.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
-            case "LD" -> leastDomainOrderingHeuristic(keys);
-            case "DEG" -> maximalDegreeOrderingHeuristic(keys);
-            case "DD" -> minimalDomainOverDegreeOrderingHeuristic(keys);
-            case "MWO" -> minimalWidthOrderingHeuristic(keys);
+            case "LD" -> staticOrdering.leastDomainOrderingHeuristic(keys);
+            case "DEG" -> staticOrdering.maximalDegreeOrderingHeuristic(keys);
+            case "DD" -> staticOrdering.minimalDomainOverDegreeOrderingHeuristic(keys);
+            case "MWO" -> staticOrdering.minimalWidthOrderingHeuristic(keys);
             default -> keys;
         }).stream().map(variableLookup::get).collect(Collectors.toList());
 
@@ -73,7 +74,11 @@ public class SearchSolver {
         firstSolution = oneSolutionBtResponse.paths.isEmpty()
                 ? new int[0]
                 : oneSolutionBtResponse.paths.get(0).stream().mapToInt(i -> i).toArray();
+        searchedVariables = oneSolutionBtResponse.orders.isEmpty()
+                ? new ArrayList<String>()
+                : oneSolutionBtResponse.orders;
 
+        variables.forEach(Variable::resetCurrentDomain);
         var allSolStartTime = System.nanoTime();
         var allSolutionsBtResponse = searchFunction.apply(orderedVariables, true);
         var allSolEndTime = System.nanoTime() - allSolStartTime;
@@ -92,125 +97,12 @@ public class SearchSolver {
         System.out.println("nv: " + nv);
         System.out.println("bt: " + bt);
         System.out.println("cpu: " + cpuTime);
+        System.out.println("First Solution: " + Arrays.toString(new List[]{searchedVariables}));
         System.out.println("First Solution: " + Arrays.toString(firstSolution));
         System.out.println("all-sol cc: " + allSolsCc);
         System.out.println("all-sol nv: " + allSolsNv);
         System.out.println("all-sol bt: " + allSolsBt);
         System.out.println("all-sol cpu: " + allSolsCpuTime);
         System.out.println("Number of solutions: " + numberOfSolutions);
-    }
-
-
-    private List<String> leastDomainOrderingHeuristic(List<String> keys) {
-        keys.sort((a, b) -> {
-            if (variableLookup.get(a).getDomain().getCurrentDomain().size()
-                    == variableLookup.get(b).getDomain().getCurrentDomain().size()
-            ) {
-                return a.compareTo(b);
-            }
-
-            return variableLookup.get(a).getDomain().getCurrentDomain().size()
-                    - variableLookup.get(b).getDomain().getCurrentDomain().size();
-        });
-
-        return keys;
-    }
-
-    private List<String> maximalDegreeOrderingHeuristic(List<String> keys) {
-        var degreeCount = keys.stream()
-                .collect(Collectors.toMap(k -> k, k -> variableLookup.get(k).getNeighbors().size()));
-
-        var seen = new HashSet<String>();
-        var ordered = new ArrayList<String>();
-        do {
-            var degree = buildOrderedDegreeMap(keys, degreeCount, seen);
-
-            var maxDegree = degree.lastEntry().getValue().stream()
-                    .sorted(Comparator.naturalOrder())
-                    .collect(Collectors.toList());
-            for (var k : maxDegree) {
-                variableLookup.get(k).getNeighbors().forEach(n -> {
-                    degreeCount.put(n.getName(), degreeCount.get(n.getName()) - 1);
-                });
-                seen.add(k);
-                ordered.add(k);
-            }
-        } while (seen.size() < keys.size());
-
-        return ordered;
-    }
-
-    private List<String> minimalWidthOrderingHeuristic(List<String> keys) {
-        var degreeCount = keys.stream()
-                .collect(Collectors.toMap(k -> k, k -> variableLookup.get(k).getNeighbors().size()));
-
-        var seen = new HashSet<String>();
-        var ordered = new ArrayList<String>();
-        do {
-            var degree = buildOrderedDegreeMap(keys, degreeCount, seen);
-
-            var minWidth = degree.firstEntry().getValue().stream()
-                    .sorted(Comparator.naturalOrder())
-                    .collect(Collectors.toList());
-            for (var k : minWidth) {
-                variableLookup.get(k).getNeighbors().forEach(n -> {
-                    degreeCount.put(n.getName(), degreeCount.get(n.getName()) - 1);
-                });
-                seen.add(k);
-                ordered.add(0, k);
-            }
-        } while (seen.size() < keys.size());
-
-        return ordered;
-    }
-
-    private TreeMap<Integer, List<String>> buildOrderedDegreeMap(List<String> keys, Map<String, Integer> degreeCount, HashSet<String> seen) {
-        var degree = new TreeMap<Integer, List<String>>();
-        keys.forEach(k -> {
-            if (seen.contains(k))
-                return;
-            degree.putIfAbsent(degreeCount.get(k), new ArrayList<>());
-            degree.get(degreeCount.get(k)).add(k);
-        });
-        return degree;
-    }
-
-    private List<String> minimalDomainOverDegreeOrderingHeuristic(List<String> keys) {
-        var ddrCount = keys.stream().collect(Collectors.toMap(
-                k -> k,
-                k -> variableLookup.get(k).getDomain().getCurrentDomain().size() * 1.0 / variableLookup.get(k).getNeighbors().size()
-        ));
-
-        var degreeCount = keys.stream()
-                .collect(Collectors.toMap(k -> k, k -> variableLookup.get(k).getNeighbors().size()));
-
-        var seen = new HashSet<String>();
-        var ordered = new ArrayList<String>();
-        do {
-            var degree = new TreeMap<Double, List<String>>();
-            keys.forEach(k -> {
-                if (seen.contains(k))
-                    return;
-                degree.putIfAbsent(ddrCount.get(k), new ArrayList<>());
-                degree.get(ddrCount.get(k)).add(k);
-            });
-
-            var maxDegree = degree.firstEntry().getValue().stream()
-                    .sorted(Comparator.naturalOrder())
-                    .collect(Collectors.toList());
-            for (var k : maxDegree) {
-                variableLookup.get(k).getNeighbors().forEach(n -> {
-                    degreeCount.put(n.getName(), degreeCount.get(n.getName()) - 1);
-                    ddrCount.put(n.getName(),
-                            variableLookup.get(k).getDomain().getCurrentDomain().size() * 1.0
-                                    / (degreeCount.get(n.getName()))
-                    );
-                });
-                seen.add(k);
-                ordered.add(k);
-            }
-        } while (seen.size() < keys.size());
-
-        return ordered;
     }
 }
