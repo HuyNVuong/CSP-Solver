@@ -26,18 +26,20 @@ public class SearchSolver {
     private SolutionChecker solutionChecker;
     private String fileName;
 
-    private final F3<List<Variable>, Boolean, SearchResponse> searchFunction;
+    private F3<List<Variable>, Boolean, SearchResponse> searchFunction;
 
     private int[] firstSolution;
     private List<String> searchedVariables;
     private List<Variable> variables;
 
+    private final List<Long> ccs;
 
     public SearchSolver(F3<List<Variable>, Boolean, SearchResponse> solverFunction) {
         searchFunction = solverFunction;
         variables = new ArrayList<>();
         cpuTime = 0;
         allSolsCpuTime = 0;
+        ccs = new ArrayList<>();
     }
 
     public void loadInstance(String fileName) {
@@ -50,18 +52,21 @@ public class SearchSolver {
 
     public void solve(String order) {
         variableOrdering = order;
+        variables.forEach(Variable::resetCurrentDomain);
         var keys = variables.stream().map(Variable::getName).collect(Collectors.toList());
         var staticOrdering = new StaticOrdering(variables);
         var variableLookup = variables.stream().collect(Collectors.toMap(Variable::getName, v -> v));
         var orderedVariables = (switch (order) {
             case "LX" -> keys.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
-            case "LD" -> staticOrdering.leastDomainOrderingHeuristic(keys);
-            case "DEG" -> staticOrdering.maximalDegreeOrderingHeuristic(keys);
-            case "DD" -> staticOrdering.minimalDomainOverDegreeOrderingHeuristic(keys);
+            case "LD", "dLD" -> staticOrdering.leastDomainOrderingHeuristic(keys);
+            case "DEG", "dDEG" -> staticOrdering.maximalDegreeOrderingHeuristic(keys);
+            case "DD", "dDD" -> staticOrdering.minimalDomainOverDegreeOrderingHeuristic(keys);
             case "MWO" -> staticOrdering.minimalWidthOrderingHeuristic(keys);
             default -> keys;
         }).stream().map(variableLookup::get).collect(Collectors.toList());
 
+        if (order.startsWith("d"))
+            searchFunction = ForwardChecking::searchWithDynamicOrdering;
         System.out.println(orderedVariables.stream().map(Variable::getName).collect(Collectors.joining(",")));
 
         var startTime = System.nanoTime();

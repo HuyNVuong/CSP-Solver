@@ -4,10 +4,7 @@ import algorithms.ac.AcSolver;
 import algorithms.ac.ArcConsistency_1;
 import algorithms.ac.ArcConsistency_3;
 import algorithms.ac.ArcConsistency_4;
-import algorithms.search.BackTracking;
-import algorithms.search.ForwardChecking;
-import algorithms.search.SearchSolver;
-import algorithms.search.ConflictedBackJumping;
+import algorithms.search.*;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -41,6 +38,7 @@ public class Program {
                 case "BT" -> new SearchSolver(BackTracking::search);
                 case "CBJ" -> new SearchSolver(ConflictedBackJumping::search);
                 case "FC" -> new SearchSolver(ForwardChecking::search);
+                case "FCCBJ" -> new SearchSolver(ForwardCheckingWithConflictDirectedBackJumping::search);
                 default   ->  null;
             };
             assert btSolver != null;
@@ -48,10 +46,10 @@ public class Program {
 //            btSolver.solve(args[5]);
             btSolver.solve(args[5]);
             btSolver.report();
-//            for (var t : new String[]{"LX", "LD", "DEG", "DD", "MWO"}) {
-//                btSolver.solve(t);
-//                btSolver.report();
-//            }
+            for (var t : new String[]{"LX", "LD", "DEG", "DD", "MWO"}) {
+                btSolver.solve(t);
+                btSolver.report();
+            }
         }
     }
 

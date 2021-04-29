@@ -1,13 +1,14 @@
 package algorithms.search;
 
 import algorithms.models.SearchResponse;
+import algorithms.models.VVP;
 import csp.Variable;
 import nc.NodeConsistency;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ForwardChecking {
+public class ForwardCheckingWithConflictDirectedBackJumping {
     static long cc;
     static long nv;
 
@@ -22,13 +23,27 @@ public class ForwardChecking {
     public static SearchResponse search(List<Variable> variables, boolean solveAllSolutions, boolean useDynamicOrdering) {
         cc = 0;
         nv = 0;
+        long bt = 0;
         variables.forEach(NodeConsistency::enforceNodeConsistency);
+        var solutions = new ArrayList<ArrayList<Integer>>();
 
-        List<HashSet<Integer>> D = variables.stream().map(v -> {
+        var visited = new ArrayList<Integer>();
+
+        var variableLookup = variables.stream().collect(Collectors.toMap(Variable::getName, v -> v));
+
+        var D = variables.stream().map(v -> {
             var domain = v.getDomain();
-            return domain.getCurrentDomain();
+            return new HashSet<>(domain.getCurrentDomain());
         }).collect(Collectors.toList());
+        var J = variables.stream()
+                .map(v -> new HashSet<Integer>())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        List<String> visitedVariables = new ArrayList<>();
         int i = 0, n = variables.size();
+        List<VVP> exploredVVPs = new ArrayList<>();
+        var cbf = new boolean[n];
+
         var lastInstantiatedState = new HashMap<String, HashMap<String, HashSet<Integer>>>();
         for (int j = 0; j < n; j++) {
             lastInstantiatedState.put(variables.get(j).getName(), new HashMap<>(variables.stream()
@@ -44,45 +59,49 @@ public class ForwardChecking {
                         v -> new HashSet<>(v.getDomain().getCurrentDomain())
                 ))
         ));
-        var solutions = new ArrayList<ArrayList<Integer>>();
-        var visited = new ArrayList<Integer>();
-
-        var variableLookup = variables.stream().collect(Collectors.toMap(Variable::getName, v -> v));
-        var visitedVariables = new ArrayList<String>();
-        long bt = 0;
 
         while(0 <= i && (i < n || solveAllSolutions)) {
-            var xi = i == n ? null : selectValue(n, D, i, variables.get(i), variables);
+            Integer xi;
+            if (i == variables.size()) {
+                i--;
+                xi = null;
+            } else {
+                xi = selectValue(n, D, i, variables.get(i), variables, exploredVVPs, J);
+            }
             if (xi == null) {
                 bt++;
-                if (!visited.isEmpty()) {
-                    visited.remove(visited.size() - 1);
-                    visitedVariables.remove(visitedVariables.size() - 1);
+                int iPrev = i;
+                if (cbf[i] || J.get(i).size() == 0) {
+                    cbf[i] = false;
+                    i--;
+                } else {
+                    i = Collections.max(J.get(i));
                 }
-                i--;
+                if (i == -1)
+                    break;
+                for (var k : J.get(iPrev)) {
+                    J.get(i).add(k);
+                }
+
+                J.get(i).remove(i);
                 for (int k = i + 1; k < n; k++)
                     if (i >= 0)
                         D.set(k, new HashSet<>(lastInstantiatedState
                                 .get(variables.get(i).getName())
                                 .get(variables.get(k).getName())));
-            } else {
-                visited.add(xi);
-                visitedVariables.add(variables.get(i).getName());
-                nv++;
-                if (useDynamicOrdering && i < n) {
-                    var DCopy = new HashMap<String, HashSet<Integer>>();
-                    for (int j = 0; j < n; j++) {
-                        DCopy.put(variables.get(j).getName(), new HashSet<>(D.get(j)));
-                    }
-                    var nextVariablesOrders = degreeOrderingHeuristic(variableLookup, visitedVariables);
-                    variables = nextVariablesOrders.stream().map(variableLookup::get).collect(Collectors.toList());
-
-                    for (int j = 0; j < n; j++) {
-                        D.set(j, DCopy.get(variables.get(j).getName()));
-                    }
+                if (exploredVVPs.size() > 0) {
+                    exploredVVPs = exploredVVPs.subList(0, i);
+                    visitedVariables = visitedVariables.subList(0, i);
                 }
-
+            } else {
                 i++;
+                nv++;
+                exploredVVPs.add(new VVP(variables.get(i - 1), xi));
+                visitedVariables.add(variables.get(i - 1).getName());
+                if (i < variables.size()) {
+                    D.set(i, new HashSet<>(variables.get(i).getDomain().getCurrentDomain()));
+                    J.set(i, new HashSet<>());
+                }
                 var key = i == n ? "completed" : variables.get(i).getName();
                 lastInstantiatedState.put(key, new HashMap<>());
                 for (int j = 0; j < n; j++) {
@@ -91,98 +110,67 @@ public class ForwardChecking {
                             new HashSet<>(D.get(j)));
                 }
                 if (i == n) {
-                    solutions.add(new ArrayList<>(visited));
+                    Arrays.fill(cbf, true);
+//                    System.out.printf("Solution %d\n", solutions.size());
+                    solutions.add(new ArrayList<>(exploredVVPs.stream().map(vvp -> vvp.value).collect(Collectors.toList())));
+                    if (solutions.size() > 0 && solutions.size() % 1000 == 0) {
+                        System.out.printf("Found %d solutions\n", solutions.size());
+                    }
                 }
             }
+
         }
+
 
         return new SearchResponse(solutions, cc, nv, bt, visitedVariables);
     }
 
-    private static ArrayList<String> degreeOrderingHeuristic(Map<String, Variable> variableLookup, List<String> seenVariables) {
-        var keys = new ArrayList<>(variableLookup.keySet());
-        var degreeCount = keys.stream()
-                .collect(Collectors.toMap(k -> k, k -> variableLookup.get(k).getNeighbors().size()));
-
-        var seen = new HashSet<String>();
-        var ordered = new ArrayList<String>();
-        for (var v : seenVariables) {
-            variableLookup.get(v).getNeighbors().forEach(n -> {
-                degreeCount.put(n.getName(), degreeCount.get(n.getName()) - 1);
-            });
-            seen.add(v);
-            ordered.add(v);
-        }
-        if (ordered.size() == variableLookup.size()) {
-            return ordered;
-        }
-
-        do {
-            var degree = buildOrderedDegreeMap(keys, degreeCount, seen);
-
-            var maxDegree = degree.lastEntry().getValue().stream()
-                    .sorted(Comparator.naturalOrder())
-                    .collect(Collectors.toList());
-            for (var k : maxDegree) {
-                variableLookup.get(k).getNeighbors().forEach(n -> {
-                    degreeCount.put(n.getName(), degreeCount.get(n.getName()) - 1);
-                });
-                seen.add(k);
-                ordered.add(k);
-            }
-        } while (seen.size() < keys.size());
-
-        return ordered;
-    }
-
-    public static ArrayList<String> leastDomainOrderingHeuristic(Map<String, Variable> variableLookup, List<String> seenVariables) {
-        var keys = new ArrayList<>(variableLookup.keySet());
-
-        keys.sort((a, b) -> {
-            if (seenVariables.contains(a) && seenVariables.contains(b)) {
-                return a.compareTo(b);
-            }
-            if (seenVariables.contains(a)) {
-                return -1;
-            }
-            if (seenVariables.contains(b)) {
-                return 1;
-            }
-            if (variableLookup.get(a).getDomain().getCurrentDomain().size()
-                    == variableLookup.get(b).getDomain().getCurrentDomain().size()
-            ) {
-                return a.compareTo(b);
-            }
-
-            return variableLookup.get(a).getDomain().getCurrentDomain().size()
-                    - variableLookup.get(b).getDomain().getCurrentDomain().size();
-        });
-
-        return keys;
-    }
-
-    public static TreeMap<Integer, List<String>> buildOrderedDegreeMap(List<String> keys, Map<String, Integer> degreeCount, HashSet<String> seen) {
-        var degree = new TreeMap<Integer, List<String>>();
-        keys.forEach(k -> {
-            if (seen.contains(k))
-                return;
-            degree.putIfAbsent(degreeCount.get(k), new ArrayList<>());
-            degree.get(degreeCount.get(k)).add(k);
-        });
-        return degree;
-    }
-
     private static Integer selectValue(
             int n, List<HashSet<Integer>> D, int currentIndex,
-            Variable currentVariable, List<Variable> variables
+            Variable currentVariable, List<Variable> variables,
+            List<VVP> previousVVPs, ArrayList<HashSet<Integer>> J
     ) {
         var currentDomain = D.get(currentIndex);
         var valuesToRemoveFromCurrentDomain = new HashSet<Integer>();
         var valuesToRemoveFromFutureDomain = new HashMap<Integer, HashSet<Integer>>();
-        Integer chosenValue = null;
+        Integer instantiated = null;
         for (var a : currentDomain) {
             valuesToRemoveFromCurrentDomain.add(a);
-            var hasConsistent = currentIndex + 1 == n;
+            boolean hasConsistent = true;
+            if (!previousVVPs.isEmpty()) {
+                int k = 0;
+                while (k < previousVVPs.size() && hasConsistent) {
+                    var vvp = previousVVPs.get(k);
+
+                    if (vvp.v.shareManyConstraintsWithNeighbor(currentVariable.getName())) {
+                        var allConstraints = vvp.v.getAllConstraintForPairs(currentVariable.getName());
+
+                        hasConsistent = allConstraints.stream().allMatch(subConstraint -> {
+                            var isReversed = !subConstraint
+                                    .getVariables().get(1).getName()
+                                    .equals(currentVariable.getName());
+                            return Helper.binaryConsistent(vvp.value, a, subConstraint, isReversed);
+                        });
+                    } else {
+                        var constraint = vvp.v.getSharedConstraint(currentVariable.getName());
+                        if (constraint == null) {
+                            k++;
+                            continue;
+                        }
+                        var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
+                        hasConsistent = Helper.binaryConsistent(vvp.value, a, constraint, isReversed);
+                    }
+
+                    if (hasConsistent) {
+                        k++;
+                    } else {
+                        J.get(currentIndex).add(k);
+                    }
+                }
+            }
+            if (!hasConsistent)
+                continue;
+            hasConsistent = currentIndex + 1 == n;
             var copy = valuesToRemoveFromFutureDomain.entrySet().stream().collect(
                     Collectors.toMap(Map.Entry::getKey,
                             entry -> entry.getValue() == null ? new HashSet<Integer>() : new HashSet<>(entry.getValue())));
@@ -206,7 +194,6 @@ public class ForwardChecking {
                             hasConsistent = true;
                             break;
                         }
-                        cc++;
 
                         var isReversed = !constraint.getVariables().get(1).getName().equals(currentVariable.getName());
                         isConsistent = Helper.binaryConsistent(a, b, constraint, isReversed);
@@ -245,13 +232,14 @@ public class ForwardChecking {
             }
 
             if (hasConsistent) {
-                chosenValue = a;
+                instantiated = a;
                 break;
             }
+
         }
 
         D.get(currentIndex).removeAll(valuesToRemoveFromCurrentDomain);
 
-        return chosenValue;
+        return instantiated;
     }
 }

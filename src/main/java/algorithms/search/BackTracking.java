@@ -1,7 +1,7 @@
 package algorithms.search;
 
-import algorithms.models.VVP;
 import algorithms.models.SearchResponse;
+import algorithms.models.VVP;
 import csp.Variable;
 import nc.NodeConsistency;
 
